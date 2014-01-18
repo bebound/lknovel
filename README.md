@@ -19,7 +19,7 @@ http://lknovel.lightnovel.cn/main/book/2664.html
 
 http://lknovel.lightnovel.cn/main/vollist/726.html
 
-![](https://github.com/bebound/lknovel/screenShot/1.png)
+![](https://raw.github.com/bebound/lknovel/master/screenShot/1.PNG)
 
 ##不足
 
