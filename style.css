@@ -1,0 +1,211 @@
+/*所有自定义css内容写最下方*/
+body {
+	padding: 0%;
+	margin-top: 0%;
+	margin-bottom: 0%;
+	margin-left: 1%;
+	margin-right: 1%;
+	line-height: 130%;
+	text-align: justify;
+}
+h1 {
+	line-height: 130%;
+	text-align: center;
+	font-weight: bold;
+	font-size: xxx-large;
+	margin-top: 0.2em;
+	margin-bottom: 0.3em;
+}
+h2 {
+	line-height: 130%;
+	text-align: center;
+	font-weight: bold;
+	font-size: x-large;
+	margin-top: 0.2em;
+	margin-bottom: 0.3em;
+}
+h2.subtitle {
+	font-size: 20px;
+}
+h3 {
+	font-size: large;
+	line-height: 130%;
+	text-align: center;
+	text-indent: 0em;
+	font-weight: bold;
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
+h4 {
+	font-size: 1.5em;
+	text-align: center;
+	line-height: 1.2em;
+	text-indent: 0em;
+	font-weight: bold;
+	margin-top: 1em;
+	margin-bottom: 1.5em;
+}
+div {
+	margin: 0px;
+	padding: 0px;
+	text-align: justify;
+}
+p {
+	text-indent: 2em;
+	display: block;
+	line-height: 1.3em;
+	margin-top: 0.4em;
+	margin-bottom: 0.4em;
+}
+ul.contents {
+	text-indent: 0em;
+	font-size: 1.06em;
+	font-weight: bold;
+}
+li.c-rules {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	line-height: 1.1em;
+}
+li ul li.c-rules {
+	font-size: 15px;
+	margin-left: -1em;
+	line-height: 1.1em;
+	font-weight: normal;
+}
+.bb {
+	border-style: none solid none solid;
+	border-color: #000000;
+	border-width: 1px;
+}
+.biaoti {
+	font-size: 1.5em;
+	text-indent: 0em;
+	font-weight: bold;
+	text-align: center;
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
+.biaoti-left {
+	font-size: 1.3em;
+	text-indent: 0em;
+	font-weight: bold;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+.caiye {
+	text-indent: 0em;
+	font-size:1.2em;
+	font-weight:bold;
+}
+.cont {
+	text-indent: 2em;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+.logo-img {
+	text-indent: 0em;
+	text-align: center;
+	margin-top: 36%;
+	margin-bottom: 0%;
+}
+.logo-maker {
+	border-bottom-style: solid;
+	border-color: #000000;
+	border-width: 0.2em;
+	font-size: 1.1em;
+	font-weight: bold;
+	text-indent: 0em;
+	text-align: right;
+	margin: 0% 2% 0% 32%;
+	padding-right: 6%;
+}
+dl.logo-maker > dt {
+	font-size: 15px;
+}
+.logo-width {
+	width:100%;
+}
+.cut-line {
+	text-indent: 0em;
+	line-height: 0%;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+.cover {
+	margin: 0;
+	padding: 0px;
+	text-indent: 0;
+	text-align: center;
+}
+.dash-break {
+	word-break:break-all;
+	word-wrap:break-word;
+}
+.illus {
+	text-indent: 0;
+	text-align: center;
+}
+.left {
+	text-indent: 0em;
+	text-align: left;
+}
+.line-index {
+	width: 50%;
+	text-align: left;
+	margin-left: 1em;
+}
+.message {
+	text-indent: 0em;
+	line-height: 1.2em;
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
+.meg {
+	font-size: 1.3em;
+	text-indent: 0em;
+	font-weight: bold;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+.right {
+	text-align: right;
+}
+.stress {
+	font-weight: bold;
+	font-size: 1.1em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+.title-main {
+	border-style: ridge groove none none;
+	border-color: #4682b4;
+	border-width: 6px;
+	margin: 12px;
+	padding: 8px;
+}
+.zuozhe {
+	font-size:1.2em;
+	text-align:right;
+	font-weight:bold;
+	font-style:italic;
+	margin-right: 1em;
+}
+.postil-b {
+	font-size: 0.8em;
+	vertical-align: super;
+	font-weight: bold;
+	color: #6b8e23;
+}
+.postil-od {
+	font-size: 0.9em;
+	text-indent: -1em;
+	line-height: 120%;
+	color: #2f4f4f;
+	padding-left: 1em;
+	margin: 0.6em 5% 0.6em 1.5em;
+	border-style: dotted solid dotted none;
+	border-color: #2f4f4f;
+	border-width: 1px;
+	border-right-width: 0.5em;
+}
