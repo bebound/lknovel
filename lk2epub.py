@@ -3,11 +3,13 @@ import os
 import codecs
 import threading
 import shutil
+import queue
 import zipfile
 import requests
 from bs4 import BeautifulSoup
 
 debug = 1
+downloadQueue = queue.Queue()
 
 #从volist中提取每一卷的网址
 def parseList(url):
@@ -22,7 +24,7 @@ def parseList(url):
 
 
 def parseVolume(url):
-    print('getting:',url)
+    print('getting:', url)
     r = requests.get(url)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text)
@@ -39,16 +41,16 @@ def parseVolume(url):
     for i in tempChapterLink:
         chapterLink.append(findChapterLink.search(str(i)).group(1))
     tempAuthorName = soup.select(
-        'html body div.content div.container div.row-fluid div.span9 div.well div.row-fluid div.span10 table.lk-book-detail tbody tr td')
-    findAuthorName = re.compile(r'target="_blank">(.*)</a>')
+        'table.lk-book-detail')
+    findAuthorName = re.compile(r'target="_blank">(.*)</a></td>')
     authorName = findAuthorName.search(str(tempAuthorName)).group(1)
-    findIllusterName = re.compile(r'<td>插 画：</td>, <td> (.*)</td>, <td>文 库：')
-    illusterName = findIllusterName.search(str(tempAuthorName)).group(1)
+    findIllusterName = re.compile(r'<td>插 画：</td><td> (.*)</td><td>文 库：</td>')
+    illusterName = findIllusterName.search(str(tempAuthorName).replace('\n', '')).group(1)
     print('authorName:', authorName, '\nillusterName:', illusterName)
     tempIntroduction = soup.select(
         'html body div.content div.container div.row-fluid div.span9 div.well div.row-fluid div.span10 p')
     findIntroduction = re.compile(r'<p style="width:42em; text-indent: 2em;">(.*)</p>')
-    introduction = findIntroduction.search(str(tempIntroduction).replace('\n','')).group(1)
+    introduction = findIntroduction.search(str(tempIntroduction).replace('\n', '')).group(1)
     #print('introduction:',introduction)
     tempCoverUrl = soup.select(
         'html body div.content div.container div.row-fluid div.span9 div.well div.row-fluid div.span2 div.lk-book-cover a')
@@ -103,6 +105,8 @@ def parseChapter(url, newEpub, number):
 #建文件夹 下cover 生成单章节 目录 打包zip
 def createEpub(newEpub):
     coverUrl = 'http://lknovel.lightnovel.cn' + newEpub.coverUrl
+
+    #创建需要的文件夹
     if not os.path.exists(newEpub.bookName):
         os.mkdir(newEpub.bookName)
     basePath = os.path.abspath(newEpub.bookName)
@@ -114,28 +118,34 @@ def createEpub(newEpub):
         os.mkdir(os.path.join(os.path.join(basePath, 'Images')))
     shutil.copy2('style.css', os.path.join(os.path.join(basePath, 'Styles')))
     coverPath = os.path.join(os.path.join(basePath, 'Images'), coverUrl.split('/')[-1])
-    download(coverUrl, basePath)
+    downloadQueue.put((coverUrl, basePath))
     createText(newEpub, os.path.join(os.path.join(basePath, 'Text')), basePath)
 
+    #打包epub文件
     zip = zipfile.ZipFile(newEpub.bookName + '.epub', 'w', zipfile.ZIP_DEFLATED)
     for dirpath, dirnames, filenames in os.walk(basePath):
         for file in filenames:
             f = os.path.join(dirpath, file)
             zip.write(f, 'OEBPS//' + f[len(basePath) + 1:])
-        zip.write('container.xml', 'META-INF//container.xml')
+    zip.write('container.xml', 'META-INF//container.xml')
     print('已生成：', newEpub.bookName + '.epub\n\n')
+
+    #删除临时文件
     shutil.rmtree(basePath)
 
 
 #下载图片专用
-def download(url, basePath):
-    print('downloading:', url)
-    path = os.path.join(os.path.join(basePath, 'Images'), url.split('/')[-1])
-    r = requests.get(url, stream=True)
-    if r.status_code == requests.codes.ok:
-        with open(path, 'wb') as f:
-            for chunk in r.iter_content():
-                f.write(chunk)
+def download():
+    while not downloadQueue.empty():
+        url, basePath = downloadQueue.get()
+        print('downloading:', url)
+        path = os.path.join(os.path.join(basePath, 'Images'), url.split('/')[-1])
+        r = requests.get(url, stream=True)
+        if r.status_code == requests.codes.ok:
+            with open(path, 'wb') as f:
+                for chunk in r.iter_content():
+                    f.write(chunk)
+        downloadQueue.task_done()
 
 
 def createText(newEpub, textPath, basePath):
@@ -151,16 +161,19 @@ def createText(newEpub, textPath, basePath):
             if line.startswith('<div class="lk-view-img">'):
                 findImagesUrl = re.compile(r'data-cover="(.*)" src="')
                 imageUrl = 'http://lknovel.lightnovel.cn' + findImagesUrl.search(line).group(1)
-                download(imageUrl, basePath)
-                imageP = '<div class="illus"><img alt="" src="../Images/' + imageUrl.split('/')[-1] + '" /></div>'
+                downloadQueue.put((imageUrl, basePath))
+                imageP = '<div class="illus"><img alt="" src="../Images/' + imageUrl.split('/')[
+                    -1] + '" /></div>\n<br/>'
                 htmlContent.append(imageP)
             else:
                 htmlContent.append('<p>' + line + '</p>')
         htmlHead3 = '</div>\n</body>\n</html>'
         htmlContent.append(htmlHead3)
+        tempContent = ''
+        for line in htmlContent:
+            tempContent += line
         with codecs.open(os.path.join(textPath, str(i[0]) + '.html'), 'w', 'utf-8') as f:
-            for line in htmlContent:
-                f.write(line + '\n')
+            f.write(BeautifulSoup(tempContent).prettify())
 
     #生成Title.html
     htmlContent = []
@@ -174,20 +187,34 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append('<h3 class="right sigil_not_in_toc" id="heading_5">插画：' + newEpub.illusterName + '</h3>')
     htmlContent.append('<h3>制作：<a target="_blank" href="http://www.github.com/bebound/lknovel">lknoveltoepub</a></h3>')
     htmlContent.append('</div>\n</body>\n</html>')
+    tempContent = ''
+    for line in htmlContent:
+        tempContent += line
     with codecs.open(os.path.join(textPath, 'Title.html'), 'w', 'utf-8') as f:
-        for line in htmlContent:
-            f.write(line + '\n')
+        f.write(BeautifulSoup(tempContent).prettify())
 
     #生成Contents.html
     htmlContent = []
-    htmlContent.append('<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>目录</title>\n</head>')
+    htmlContent.append(
+        '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>目录</title>\n</head>')
     htmlContent.append('<body>\n<div>\n<p class="cont">目录</p>\n<hr class="line-index" />\n<ul class="contents">\n')
     for i in sorted(newEpub.chapter, key=lambda chapter: chapter[0]):
         htmlContent.append('<li class="c-rules"><a href="../Text/' + str(i[0]) + '.html">' + i[1] + '</a></li>')
     htmlContent.append('</ul>\n</div>\n</body>\n</html>')
+    tempContent = ''
+    for line in htmlContent:
+        tempContent += line
     with codecs.open(os.path.join(textPath, 'Contents.html'), 'w', 'utf-8') as f:
-        for line in htmlContent:
-            f.write(line + '\n')
+        f.write(BeautifulSoup(tempContent).prettify())
+
+    #下载相关图片
+    th = []
+    for i in range(10):
+        t = threading.Thread(target=download)
+        t.start()
+        th.append(t)
+    for i in th:
+        i.join()
 
     #生成content.opf
     htmlContent = []
@@ -218,6 +245,7 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append(
         '<guide>\n<reference href="Text/Contents.html" title="Table Of Contents" type="toc" />\n</guide>')
     htmlContent.append('</package>')
+
     with codecs.open(os.path.join(basePath, 'content.opf'), 'w', 'utf-8') as f:
         for line in htmlContent:
             f.write(line + '\n')
@@ -225,7 +253,7 @@ def createText(newEpub, textPath, basePath):
     #生成toc.ncx
     htmlContent = []
     htmlContent.append(
-        '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"\n"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">\n<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">\n<docTitle>\n<text>' + newEpub.bookName + '</text>\n' + '</docTitle>')
+        '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"\n"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">\n<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">\n<head>\n<meta content="urn:uuid:5208e6bb-5d25-45b0-a7fd-b97d79a85fd4" name="dtb:uid"/>\n<meta content="0" name="dtb:depth"/>\n<meta content="0" name="dtb:totalPageCount"/>\n<meta content="0" name="dtb:maxPageNumber"/>\n</head>\n<docTitle><text>' + newEpub.bookName + '</text></docTitle>''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"\n"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">\n<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="en-US">\n<head>\n<!-- The following four metadata items are required for all\nNCX documents, including those conforming to the relaxed\nconstraints of OPS 2.0 -->\n<meta content="51037e82-03ff-11dd-9fbb-0018f369440e" name="dtb:uid"/>\n<meta content="1" name="dtb:depth"/>\n<meta content="0" name="dtb:totalPageCount"/>\n<meta content="0" name="dtb:maxPageNumber"/>\n</head>\n<docTitle><text>' + newEpub.bookName + '</text></docTitle>')
     htmlContent.append('<docAuthor>\n<text>' + newEpub.authorName + '</text>\n</docAuthor>\n<navMap>')
     htmlContent.append(
         '<navPoint id="Contents" playOrder="1">\n<navLabel>\n<text>标题</text>\n</navLabel>\n<content src="Text/Title.html"/>\n</navPoint>')
@@ -238,6 +266,7 @@ def createText(newEpub, textPath, basePath):
                 1] + '</text>\n</navLabel>\n<content src="Text/' + str(i[0]) + '.html"/>\n</navPoint>')
         playorder += 1
     htmlContent.append('</navMap>\n</ncx>')
+
     with codecs.open(os.path.join(basePath, 'toc.ncx'), 'w', 'utf-8') as f:
         for line in htmlContent:
             f.write(line + '\n')
