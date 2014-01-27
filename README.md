@@ -5,9 +5,9 @@
 
 ##使用要求
 
-- python3
-- requests
-- BeautifulSoup4
+- [python3](http://www.python.org/getit/ "python3")
+- [requests](http://docs.python-requests.org/en/latest/ "requests")
+- [BeautifulSoup4](http://www.crummy.com/software/BeautifulSoup/ "BeautifulSoup4")
 
 ##使用
 

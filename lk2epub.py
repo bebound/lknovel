@@ -245,7 +245,6 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append('<dc:source>http://www.lightnovel.cn</dc:source>')
     htmlContent.append('<meta content="' + newEpub.coverUrl.split('/')[-1] + '" name="cover" />')
     htmlContent.append('</metadata>')
-
     htmlContent.append('<manifest>\n<item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Text')):
         for file in filenames:
@@ -263,8 +262,6 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append(
         '<guide>\n<reference href="Text/Contents.html" title="Table Of Contents" type="toc" />\n</guide>')
     htmlContent.append('</package>')
-
-    print(htmlContent)
     with codecs.open(os.path.join(basePath, 'content.opf'), 'w', 'utf-8') as f:
         for line in htmlContent:
             f.write(line + '\n')
