@@ -149,6 +149,22 @@ def download():
 
 
 def createText(newEpub, textPath, basePath):
+    #生成Cover.html
+    htmlContent = []
+    htmlHead1 = '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>封面</title>\n</head>\n<body>'
+    htmlContent.append(htmlHead1)
+    htmlContent.append(
+        '<div class="cover"><img alt="" class="bb" src="../Images/' + newEpub.coverUrl.split('/')[-1] + '" /></div>')
+    htmlContent.append('<h4>简介</h4>')
+    htmlContent.append('<p>' + newEpub.introduction + '</p>')
+    htmlContent.append('</body>\n</html>')
+    tempContent = ''
+    for line in htmlContent:
+        tempContent += line
+    with codecs.open(os.path.join(textPath, 'Cover.html'), 'w', 'utf-8') as f:
+        f.write(BeautifulSoup(tempContent).prettify())
+
+
     #生成单章节html
     for i in sorted(newEpub.chapter, key=lambda chapter: chapter[0]):
         htmlContent = []
@@ -198,6 +214,7 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append(
         '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>目录</title>\n</head>')
     htmlContent.append('<body>\n<div>\n<p class="cont">目录</p>\n<hr class="line-index" />\n<ul class="contents">\n')
+    htmlContent.append('<li class="c-rules"><a href="../Text/Cover.html">封面</a></li>')
     for i in sorted(newEpub.chapter, key=lambda chapter: chapter[0]):
         htmlContent.append('<li class="c-rules"><a href="../Text/' + str(i[0]) + '.html">' + i[1] + '</a></li>')
     htmlContent.append('</ul>\n</div>\n</body>\n</html>')
@@ -206,6 +223,7 @@ def createText(newEpub, textPath, basePath):
         tempContent += line
     with codecs.open(os.path.join(textPath, 'Contents.html'), 'w', 'utf-8') as f:
         f.write(BeautifulSoup(tempContent).prettify())
+
 
     #下载相关图片
     th = []
@@ -228,14 +246,14 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append('<meta content="' + newEpub.coverUrl.split('/')[-1] + '" name="cover" />')
     htmlContent.append('</metadata>')
 
-    htmlContent.append('<manifest><item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />')
+    htmlContent.append('<manifest>\n<item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Text')):
         for file in filenames:
             htmlContent.append('<item href="Text/' + file + '" id="' + file + '" media-type="application/xhtml+xml" />')
     htmlContent.append('<item href="Styles/style.css" id="style.css" media-type="text/css" />')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Images')):
         for file in filenames:
-            htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/png" />')
+            htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/jpg" />')
     htmlContent.append('</manifest>')
     htmlContent.append('<spine toc="ncx">')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Text')):
@@ -246,6 +264,7 @@ def createText(newEpub, textPath, basePath):
         '<guide>\n<reference href="Text/Contents.html" title="Table Of Contents" type="toc" />\n</guide>')
     htmlContent.append('</package>')
 
+    print(htmlContent)
     with codecs.open(os.path.join(basePath, 'content.opf'), 'w', 'utf-8') as f:
         for line in htmlContent:
             f.write(line + '\n')
@@ -253,13 +272,16 @@ def createText(newEpub, textPath, basePath):
     #生成toc.ncx
     htmlContent = []
     htmlContent.append(
-        '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"\n"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">\n<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">\n<head>\n<meta content="urn:uuid:5208e6bb-5d25-45b0-a7fd-b97d79a85fd4" name="dtb:uid"/>\n<meta content="0" name="dtb:depth"/>\n<meta content="0" name="dtb:totalPageCount"/>\n<meta content="0" name="dtb:maxPageNumber"/>\n</head>\n<docTitle><text>' + newEpub.bookName + '</text></docTitle>''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"\n"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">\n<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="en-US">\n<head>\n<!-- The following four metadata items are required for all\nNCX documents, including those conforming to the relaxed\nconstraints of OPS 2.0 -->\n<meta content="51037e82-03ff-11dd-9fbb-0018f369440e" name="dtb:uid"/>\n<meta content="1" name="dtb:depth"/>\n<meta content="0" name="dtb:totalPageCount"/>\n<meta content="0" name="dtb:maxPageNumber"/>\n</head>\n<docTitle><text>' + newEpub.bookName + '</text></docTitle>')
+        '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"\n"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">\n<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">\n<head>\n<meta content="0" name="dtb:depth"/>\n<meta content="0" name="dtb:totalPageCount"/>\n<meta content="0" name="dtb:maxPageNumber"/>\n</head>\n<docTitle>\n<text>' + newEpub.bookName + '</text>\n</docTitle>')
     htmlContent.append('<docAuthor>\n<text>' + newEpub.authorName + '</text>\n</docAuthor>\n<navMap>')
     htmlContent.append(
-        '<navPoint id="Contents" playOrder="1">\n<navLabel>\n<text>标题</text>\n</navLabel>\n<content src="Text/Title.html"/>\n</navPoint>')
+        '<navPoint id="Contents" playOrder="1">\n<navLabel>\n<text>封面</text>\n</navLabel>\n<content src="Text/Cover.html"/>\n</navPoint>')
+
     htmlContent.append(
-        '<navPoint id="Contents" playOrder="2">\n<navLabel>\n<text>目录</text>\n</navLabel>\n<content src="Text/Contents.html"/>\n</navPoint>')
-    playorder = 3
+        '<navPoint id="Contents" playOrder="2">\n<navLabel>\n<text>标题</text>\n</navLabel>\n<content src="Text/Title.html"/>\n</navPoint>')
+    htmlContent.append(
+        '<navPoint id="Contents" playOrder="3">\n<navLabel>\n<text>目录</text>\n</navLabel>\n<content src="Text/Contents.html"/>\n</navPoint>')
+    playorder = 4
     for i in sorted(newEpub.chapter, key=lambda chapter: chapter[0]):
         htmlContent.append(
             '<navPoint id="' + str(i[0]) + '" playOrder="' + str(playorder) + '">\n<navLabel>\n<text>' + i[
@@ -276,7 +298,10 @@ def main():
     url = input("输入网址:")
     ok = 1
     try:
-        a = url.split('/')[-2]
+        check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d*).html')
+        check2 = re.compile(r'http://lknovel.lightnovel.cn/main/book/(\d*).html')
+        if check.search(url) or check2.search(url):
+            a = url.split('/')[-2]
     except Exception as e:
         print(e)
         print(
