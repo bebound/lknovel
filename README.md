@@ -19,9 +19,11 @@ http://lknovel.lightnovel.cn/main/book/2664.html
 
 http://lknovel.lightnovel.cn/main/vollist/726.html
 
-![](https://raw.github.com/bebound/lknovel/master/screenShot/1.PNG)
+![软件截图](https://raw.github.com/bebound/lknovel/master/screenShot/1.PNG)
+![iPhone截图](https://raw.github.com/bebound/lknovel/master/screenShot/2.PNG)
 
 ##不足
 
-- ibooks无法打开
-- 没有封面大图
+- 封面大图添加问题
+- 图形化界面
+- 独立可执行文件

@@ -82,7 +82,6 @@ li ul li.c-rules {
 	font-size: 1.5em;
 	text-indent: 0em;
 	font-weight: bold;
-	text-align: center;
 	margin-top: 0.2em;
 	margin-bottom: 0.2em;
 }
@@ -177,7 +176,7 @@ dl.logo-maker > dt {
 	margin-top: 0.3em;
 	margin-bottom: 0.3em;
 }
-.title-main {
+.title {
 	border-style: ridge groove none none;
 	border-color: #4682b4;
 	border-width: 6px;

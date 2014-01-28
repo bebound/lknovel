@@ -4,6 +4,7 @@ import codecs
 import threading
 import shutil
 import queue
+import uuid
 import zipfile
 import requests
 from bs4 import BeautifulSoup
@@ -128,6 +129,7 @@ def createEpub(newEpub):
             f = os.path.join(dirpath, file)
             zip.write(f, 'OEBPS//' + f[len(basePath) + 1:])
     zip.write('container.xml', 'META-INF//container.xml')
+    zip.write('mimetype', 'mimetype')
     print('已生成：', newEpub.bookName + '.epub\n\n')
 
     #删除临时文件
@@ -214,7 +216,6 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append(
         '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>目录</title>\n</head>')
     htmlContent.append('<body>\n<div>\n<p class="cont">目录</p>\n<hr class="line-index" />\n<ul class="contents">\n')
-    htmlContent.append('<li class="c-rules"><a href="../Text/Cover.html">封面</a></li>')
     for i in sorted(newEpub.chapter, key=lambda chapter: chapter[0]):
         htmlContent.append('<li class="c-rules"><a href="../Text/' + str(i[0]) + '.html">' + i[1] + '</a></li>')
     htmlContent.append('</ul>\n</div>\n</body>\n</html>')
@@ -238,11 +239,14 @@ def createText(newEpub, textPath, basePath):
     htmlContent = []
     htmlContent.append(
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0">\n<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">')
-    htmlContent.append('<dc:title>' + newEpub.bookName + '</dc:title>')
     htmlContent.append(
-        '<dc:creator opf:file-as="lknovel(www.github.com/bebound/lknovel)" opf:role="aut">' + newEpub.authorName + '</dc:creator>')
+        '<dc:identifier id="BookId" opf:scheme="UUID">urn:uuid:' + str(uuid.uuid1()) + '</dc:identifier>')
+    htmlContent.append('<dc:title>标题</dc:title>')
+    htmlContent.append(
+        '<dc:creator opf:file-as="lknovel" opf:role="aut">' + newEpub.authorName + '</dc:creator>')
     htmlContent.append('<dc:language>zh</dc:language>')
     htmlContent.append('<dc:source>http://www.lightnovel.cn</dc:source>')
+    htmlContent.append('<dc:description>由https://github.com/bebound/lknovel/生成</dc:description>')
     htmlContent.append('<meta content="' + newEpub.coverUrl.split('/')[-1] + '" name="cover" />')
     htmlContent.append('</metadata>')
     htmlContent.append('<manifest>\n<item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />')
@@ -255,12 +259,17 @@ def createText(newEpub, textPath, basePath):
             htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/jpg" />')
     htmlContent.append('</manifest>')
     htmlContent.append('<spine toc="ncx">')
+    htmlContent.append(
+        '<itemref idref="Cover.html" />\n<itemref idref="Title.html" />\n<itemref idref="Contents.html" />\n')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Text')):
         for file in filenames:
-            htmlContent.append('<itemref idref="' + file + '" />')
+            if file != ('Cover.html' or 'Title.html' or 'Contents.html'):
+                htmlContent.append('<itemref idref="' + file + '" />')
     htmlContent.append('</spine>')
     htmlContent.append(
-        '<guide>\n<reference href="Text/Contents.html" title="Table Of Contents" type="toc" />\n</guide>')
+        '<guide>\n<reference href="Text/Contents.html" title="Table Of Contents" type="toc" />')
+    htmlContent.append(
+        '<reference href="Text/Cover.html" title="Cover" type="cover"/>\n</guide>')
     htmlContent.append('</package>')
     with codecs.open(os.path.join(basePath, 'content.opf'), 'w', 'utf-8') as f:
         for line in htmlContent:
@@ -273,7 +282,6 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append('<docAuthor>\n<text>' + newEpub.authorName + '</text>\n</docAuthor>\n<navMap>')
     htmlContent.append(
         '<navPoint id="Contents" playOrder="1">\n<navLabel>\n<text>封面</text>\n</navLabel>\n<content src="Text/Cover.html"/>\n</navPoint>')
-
     htmlContent.append(
         '<navPoint id="Contents" playOrder="2">\n<navLabel>\n<text>标题</text>\n</navLabel>\n<content src="Text/Title.html"/>\n</navPoint>')
     htmlContent.append(
