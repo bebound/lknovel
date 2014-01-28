@@ -27,3 +27,6 @@ http://lknovel.lightnovel.cn/main/vollist/726.html
 - 封面大图添加问题
 - 图形化界面
 - 独立可执行文件
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bebound/lknovel/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
