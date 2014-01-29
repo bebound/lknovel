@@ -1,7 +1,8 @@
 #lknovel
-==========
 
 轻之国度在线轻小说转epub
+
+![iPhone截图](https://raw.github.com/bebound/lknovel/master/screenShot/2.PNG)
 
 ##使用要求
 
@@ -20,13 +21,18 @@ http://lknovel.lightnovel.cn/main/book/2664.html
 http://lknovel.lightnovel.cn/main/vollist/726.html
 
 ![软件截图](https://raw.github.com/bebound/lknovel/master/screenShot/1.PNG)
-![iPhone截图](https://raw.github.com/bebound/lknovel/master/screenShot/2.PNG)
+
+
 
 ##不足
 
 - 封面大图添加问题
 - 图形化界面
 - 独立可执行文件
+
+##License
+
+MIT license. Copyright © Lei Hang
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bebound/lknovel/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
