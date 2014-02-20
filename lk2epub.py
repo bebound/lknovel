@@ -150,6 +150,12 @@ def download():
                     f.write(chunk)
         downloadQueue.task_done()
 
+def sortItemref(str):
+    m = re.match('\d+',str)
+    if m:
+        return int(m.group(0))
+    else:
+        return -1
 
 def createText(newEpub, textPath, basePath):
     #生成Cover.html
@@ -265,7 +271,7 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append(
         '<itemref idref="Cover.html" />\n<itemref idref="Title.html" />\n<itemref idref="Contents.html" />\n')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Text')):
-        for file in filenames:
+        for file in sorted(filenames, key=sortItemref):
             if (file != 'Cover.html') and (file != 'Title.html') and (file != 'Contents.html'):
                 htmlContent.append('<itemref idref="' + file + '" />')
     htmlContent.append('</spine>')
