@@ -179,7 +179,9 @@ def createText(newEpub, textPath, basePath):
         for line in i[2]:
             if line.startswith('<div class="lk-view-img">'):
                 findImagesUrl = re.compile(r'data-cover="(.*)" src="')
-                imageUrl = 'http://lknovel.lightnovel.cn' + findImagesUrl.search(line).group(1)
+                imageUrl = findImagesUrl.search(line).group(1)
+                if not imageUrl.startswith('http://'):
+                    imageUrl = 'http://lknovel.lightnovel.cn' + imageUrl
                 downloadQueue.put((imageUrl, basePath))
                 imageP = '<div class="illus"><img alt="" src="../Images/' + imageUrl.split('/')[
                     -1] + '" /></div>\n<br/>'
