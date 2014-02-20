@@ -244,7 +244,7 @@ def createText(newEpub, textPath, basePath):
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0">\n<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">')
     htmlContent.append(
         '<dc:identifier id="BookId" opf:scheme="UUID">urn:uuid:' + str(uuid.uuid1()) + '</dc:identifier>')
-    htmlContent.append('<dc:title>标题</dc:title>')
+    htmlContent.append('<dc:title>' + newEpub.bookName + '</dc:title>')
     htmlContent.append(
         '<dc:creator opf:file-as="lknovel" opf:role="aut">' + newEpub.authorName + '</dc:creator>')
     htmlContent.append('<dc:language>zh</dc:language>')
