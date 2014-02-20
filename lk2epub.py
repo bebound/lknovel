@@ -25,6 +25,7 @@ def parseList(url):
         parseVolume(volumeLink)
 
 
+#提取每卷信息
 def parseVolume(url):
     print('getting:', url)
     r = requests.get(url)
@@ -104,6 +105,7 @@ def parseChapter(url, newEpub, number):
         content.append(findContent.search(i).group(1))
     newEpub.addChapter((number, newChapterName, content))
 
+
 #建文件夹 下cover 生成单章节 目录 打包zip
 def createEpub(newEpub):
     coverUrl = 'http://lknovel.lightnovel.cn' + newEpub.coverUrl
@@ -118,7 +120,7 @@ def createEpub(newEpub):
         os.mkdir(os.path.join(os.path.join(basePath, 'Styles')))
     if not os.path.exists(os.path.join(basePath, 'Images')):
         os.mkdir(os.path.join(os.path.join(basePath, 'Images')))
-    shutil.copy2('style.css', os.path.join(os.path.join(basePath, 'Styles')))
+    shutil.copy2('./files/style.css', os.path.join(os.path.join(basePath, 'Styles')))
     coverPath = os.path.join(os.path.join(basePath, 'Images'), coverUrl.split('/')[-1])
     downloadQueue.put((coverUrl, basePath))
     createText(newEpub, os.path.join(os.path.join(basePath, 'Text')), basePath)
@@ -129,8 +131,8 @@ def createEpub(newEpub):
         for file in filenames:
             f = os.path.join(dirpath, file)
             zip.write(f, 'OEBPS//' + f[len(basePath) + 1:])
-    zip.write('container.xml', 'META-INF//container.xml')
-    zip.write('mimetype', 'mimetype')
+    zip.write('./files/container.xml', 'META-INF//container.xml')
+    zip.write('./files/mimetype', 'mimetype')
     print('已生成：', newEpub.bookName + '.epub\n\n')
 
     #删除临时文件
@@ -150,12 +152,14 @@ def download():
                     f.write(chunk)
         downloadQueue.task_done()
 
+
 def sortItemref(str):
-    m = re.match('\d+',str)
+    m = re.match('\d+', str)
     if m:
         return int(m.group(0))
     else:
         return -1
+
 
 def createText(newEpub, textPath, basePath):
     #生成Cover.html
