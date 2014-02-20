@@ -7,6 +7,7 @@ import queue
 import uuid
 import zipfile
 import requests
+import sys
 from bs4 import BeautifulSoup
 
 debug = 1
@@ -45,7 +46,7 @@ def parseVolume(url):
         'table.lk-book-detail')
     findAuthorName = re.compile(r'target="_blank">(.*)</a></td>')
     authorName = findAuthorName.search(str(tempAuthorName)).group(1)
-    findIllusterName = re.compile(r'<td>插 画：</td><td> (.*)</td><td>文 库：</td>')
+    findIllusterName = re.compile(r'<td>插 画：</td><td>(.*)</td><td>文 库：</td>')
     illusterName = findIllusterName.search(str(tempAuthorName).replace('\n', '')).group(1)
     print('authorName:', authorName, '\nillusterName:', illusterName)
     tempIntroduction = soup.select(
@@ -149,6 +150,12 @@ def download():
                     f.write(chunk)
         downloadQueue.task_done()
 
+def sortItemref(str):
+    m = re.match('\d+',str)
+    if m:
+        return int(m.group(0))
+    else:
+        return -1
 
 def createText(newEpub, textPath, basePath):
     #生成Cover.html
@@ -178,7 +185,9 @@ def createText(newEpub, textPath, basePath):
         for line in i[2]:
             if line.startswith('<div class="lk-view-img">'):
                 findImagesUrl = re.compile(r'data-cover="(.*)" src="')
-                imageUrl = 'http://lknovel.lightnovel.cn' + findImagesUrl.search(line).group(1)
+                imageUrl = findImagesUrl.search(line).group(1)
+                if not imageUrl.startswith('http://'):
+                    imageUrl = 'http://lknovel.lightnovel.cn' + imageUrl
                 downloadQueue.put((imageUrl, basePath))
                 imageP = '<div class="illus"><img alt="" src="../Images/' + imageUrl.split('/')[
                     -1] + '" /></div>\n<br/>'
@@ -241,9 +250,9 @@ def createText(newEpub, textPath, basePath):
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0">\n<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">')
     htmlContent.append(
         '<dc:identifier id="BookId" opf:scheme="UUID">urn:uuid:' + str(uuid.uuid1()) + '</dc:identifier>')
-    htmlContent.append('<dc:title>标题</dc:title>')
+    htmlContent.append('<dc:title>' + newEpub.bookName + '</dc:title>')
     htmlContent.append(
-        '<dc:creator opf:file-as="lknovel" opf:role="aut">' + newEpub.authorName + '</dc:creator>')
+        '<dc:creator opf:file-as="' + newEpub.authorName + '" opf:role="aut">' + newEpub.authorName + '</dc:creator>')
     htmlContent.append('<dc:language>zh</dc:language>')
     htmlContent.append('<dc:source>http://www.lightnovel.cn</dc:source>')
     htmlContent.append('<dc:description>由https://github.com/bebound/lknovel/生成</dc:description>')
@@ -256,14 +265,14 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append('<item href="Styles/style.css" id="style.css" media-type="text/css" />')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Images')):
         for file in filenames:
-            htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/jpg" />')
+            htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/jpeg" />')
     htmlContent.append('</manifest>')
     htmlContent.append('<spine toc="ncx">')
     htmlContent.append(
         '<itemref idref="Cover.html" />\n<itemref idref="Title.html" />\n<itemref idref="Contents.html" />\n')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Text')):
-        for file in filenames:
-            if file != ('Cover.html' or 'Title.html' or 'Contents.html'):
+        for file in sorted(filenames, key=sortItemref):
+            if (file != 'Cover.html') and (file != 'Title.html') and (file != 'Contents.html'):
                 htmlContent.append('<itemref idref="' + file + '" />')
     htmlContent.append('</spine>')
     htmlContent.append(
@@ -300,7 +309,10 @@ def createText(newEpub, textPath, basePath):
 
 
 def main():
-    url = input("输入网址:")
+    if len(sys.argv) < 2:
+        url = input("输入网址:")
+    else:
+        url = sys.argv[1]
     ok = 1
     try:
         check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d*).html')
