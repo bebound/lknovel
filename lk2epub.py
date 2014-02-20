@@ -7,6 +7,7 @@ import queue
 import uuid
 import zipfile
 import requests
+import sys
 from bs4 import BeautifulSoup
 
 debug = 1
@@ -300,7 +301,10 @@ def createText(newEpub, textPath, basePath):
 
 
 def main():
-    url = input("输入网址:")
+    if len(sys.argv) < 2:
+        url = input("输入网址:")
+    else:
+        url = sys.argv[1]
     ok = 1
     try:
         check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d*).html')
