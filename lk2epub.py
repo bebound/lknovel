@@ -45,7 +45,7 @@ def parseVolume(url):
         'table.lk-book-detail')
     findAuthorName = re.compile(r'target="_blank">(.*)</a></td>')
     authorName = findAuthorName.search(str(tempAuthorName)).group(1)
-    findIllusterName = re.compile(r'<td>插 画：</td><td> (.*)</td><td>文 库：</td>')
+    findIllusterName = re.compile(r'<td>插 画：</td><td>(.*)</td><td>文 库：</td>')
     illusterName = findIllusterName.search(str(tempAuthorName).replace('\n', '')).group(1)
     print('authorName:', authorName, '\nillusterName:', illusterName)
     tempIntroduction = soup.select(
