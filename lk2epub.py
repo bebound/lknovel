@@ -259,7 +259,7 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append('<item href="Styles/style.css" id="style.css" media-type="text/css" />')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Images')):
         for file in filenames:
-            htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/jpg" />')
+            htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/jpeg" />')
     htmlContent.append('</manifest>')
     htmlContent.append('<spine toc="ncx">')
     htmlContent.append(
