@@ -264,7 +264,7 @@ def createText(newEpub, textPath, basePath):
         '<itemref idref="Cover.html" />\n<itemref idref="Title.html" />\n<itemref idref="Contents.html" />\n')
     for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Text')):
         for file in filenames:
-            if file != ('Cover.html' or 'Title.html' or 'Contents.html'):
+            if (file != 'Cover.html') and (file != 'Title.html') and (file != 'Contents.html'):
                 htmlContent.append('<itemref idref="' + file + '" />')
     htmlContent.append('</spine>')
     htmlContent.append(
