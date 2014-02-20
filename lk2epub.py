@@ -246,7 +246,7 @@ def createText(newEpub, textPath, basePath):
         '<dc:identifier id="BookId" opf:scheme="UUID">urn:uuid:' + str(uuid.uuid1()) + '</dc:identifier>')
     htmlContent.append('<dc:title>' + newEpub.bookName + '</dc:title>')
     htmlContent.append(
-        '<dc:creator opf:file-as="lknovel" opf:role="aut">' + newEpub.authorName + '</dc:creator>')
+        '<dc:creator opf:file-as="' + newEpub.authorName + '" opf:role="aut">' + newEpub.authorName + '</dc:creator>')
     htmlContent.append('<dc:language>zh</dc:language>')
     htmlContent.append('<dc:source>http://www.lightnovel.cn</dc:source>')
     htmlContent.append('<dc:description>由https://github.com/bebound/lknovel/生成</dc:description>')
