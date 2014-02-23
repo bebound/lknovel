@@ -127,9 +127,9 @@ def createEpub(newEpub):
 
     #打包epub文件
     zip = zipfile.ZipFile(newEpub.bookName + '.epub', 'w', zipfile.ZIP_DEFLATED)
-    for dirpath, dirnames, filenames in os.walk(basePath):
-        for file in filenames:
-            f = os.path.join(dirpath, file)
+    for dirPath, dirNames, fileNames in os.walk(basePath):
+        for file in fileNames:
+            f = os.path.join(dirPath, file)
             zip.write(f, 'OEBPS//' + f[len(basePath) + 1:])
     zip.write('./files/container.xml', 'META-INF//container.xml')
     zip.write('./files/mimetype', 'mimetype')
@@ -263,20 +263,20 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append('<meta content="' + newEpub.coverUrl.split('/')[-1] + '" name="cover" />')
     htmlContent.append('</metadata>')
     htmlContent.append('<manifest>\n<item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />')
-    for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Text')):
-        for file in filenames:
+    for dirPath, dirNames, fileNames in os.walk(os.path.join(basePath, 'Text')):
+        for file in fileNames:
             htmlContent.append('<item href="Text/' + file + '" id="' + file + '" media-type="application/xhtml+xml" />')
     htmlContent.append('<item href="Styles/style.css" id="style.css" media-type="text/css" />')
-    for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Images')):
-        for file in filenames:
+    for dirPath, dirNames, fileNames in os.walk(os.path.join(basePath, 'Images')):
+        for file in fileNames:
             htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/jpeg" />')
     htmlContent.append('</manifest>')
     htmlContent.append('<spine toc="ncx">')
     htmlContent.append(
         '<itemref idref="Cover.html" />\n<itemref idref="Title.html" />\n<itemref idref="Contents.html" />\n')
-    for dirpath, dirnames, filenames in os.walk(os.path.join(basePath, 'Text')):
-        for file in sorted(filenames, key=sortItemref):
-            if (file != 'Cover.html') and (file != 'Title.html') and (file != 'Contents.html'):
+    for dirPath, dirNames, fileNames in os.walk(os.path.join(basePath, 'Text')):
+        for file in sorted(fileNames, key=sortItemref):
+            if file not in ('Cover.html', 'Title.html', 'Contents.html'):
                 htmlContent.append('<itemref idref="' + file + '" />')
     htmlContent.append('</spine>')
     htmlContent.append(
@@ -319,12 +319,11 @@ def main():
         url = sys.argv[1]
     ok = 1
     try:
-        check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d*).html')
-        check2 = re.compile(r'http://lknovel.lightnovel.cn/main/book/(\d*).html')
-        if check.search(url) or check2.search(url):
-            a = url.split('/')[-2]
-    except Exception as e:
-        print(e)
+        check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d+).html')
+        check2 = re.compile(r'http://lknovel.lightnovel.cn/main/book/(\d+).html')
+        if check.search(url).group(0) or check2.search(url).group(0):
+            pass
+    except Exception:
         print(
             '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/726.html\nhttp://lknovel.lightnovel.cn/main/book/2664.html')
         ok = 0
