@@ -317,24 +317,19 @@ def main():
         url = input("输入网址:")
     else:
         url = sys.argv[1]
-    ok = 1
-    try:
-        check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d+).html')
-        check2 = re.compile(r'http://lknovel.lightnovel.cn/main/book/(\d+).html')
-        if check.search(url).group(0) or check2.search(url).group(0):
-            pass
-    except Exception:
-        print(
-            '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/726.html\nhttp://lknovel.lightnovel.cn/main/book/2664.html')
-        ok = 0
+    ok = 0
+    check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d+).html')
+    check2 = re.compile(r'http://lknovel.lightnovel.cn/main/book/(\d+).html')
+    if check.search(url) or check2.search(url):
+        ok = 1
     if ok:
         if url.split('/')[-2] == 'book':
             parseVolume(url)
-        elif url.split('/')[-2] == 'vollist':
-            parseList(url)
         else:
-            print(
-                '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/726.html\nhttp://lknovel.lightnovel.cn/main/book/2664.html')
+            parseList(url)
+    else:
+        print(
+            '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/726.html\nhttp://lknovel.lightnovel.cn/main/book/2664.html')
 
 
 if __name__ == '__main__':
