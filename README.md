@@ -43,11 +43,12 @@ http://lknovel.lightnovel.cn/main/vollist/726.html
 ![GUIVersion截图](https://raw.github.com/bebound/lknovel/master/screenShot/3.PNG)
 
 
-##不足
+##未来计划
 
-- 封面大图添加问题
-- 图形化界面
-- 独立可执行文件
+
+- 新的css样式 目前使用的是轻国EPUB组的css 希望可以找到一个更好看的样式
+- GUIVersion图标
+
 
 ##License
 
