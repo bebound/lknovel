@@ -9,12 +9,23 @@ import zipfile
 import requests
 import sys
 from bs4 import BeautifulSoup
+from PyQt4 import QtCore
 
 debug = 1
 downloadQueue = queue.Queue()
 
+
+class SenderObject(QtCore.QObject):
+    sigChangeStatus = QtCore.pyqtSignal(str)
+    sigWarningMessage=QtCore.pyqtSignal(str,str)
+    sigDone = QtCore.pyqtSignal()
+
+
+sender = SenderObject()
+
+
 #从volist中提取每一卷的网址
-def parseList(url):
+def parseList(url, epubFilePath='', coverPath=''):
     r = requests.get(url)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text)
@@ -22,12 +33,14 @@ def parseList(url):
     findVolumeLink = re.compile(r'<a href="(.*)">')
     for i in tempVolumeLink:
         volumeLink = findVolumeLink.search(str(i)).group(1)
-        parseVolume(volumeLink)
+        parseVolume(volumeLink, epubFilePath, coverPath)
+    sender.sigDone.emit()
 
 
 #提取每卷信息
-def parseVolume(url):
+def parseVolume(url, epubFilePath='', coverPath=''):
     print('getting:', url)
+    sender.sigChangeStatus.emit('getting:' + url)
     r = requests.get(url)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text)
@@ -40,6 +53,7 @@ def parseVolume(url):
     volumeName = tempvolumeName[2].strip()
     volumeNumber = tempvolumeName[3].strip()
     print('volumeName:', volumeName, '\nvolumeNumber:', volumeNumber)
+    sender.sigChangeStatus.emit('volumeName:' + volumeName + '\nvolumeNumber:' + volumeNumber)
     chapterLink = []
     for i in tempChapterLink:
         chapterLink.append(findChapterLink.search(str(i)).group(1))
@@ -50,6 +64,8 @@ def parseVolume(url):
     findIllusterName = re.compile(r'<td>插 画：</td><td>(.*)</td><td>文 库：</td>')
     illusterName = findIllusterName.search(str(tempAuthorName).replace('\n', '')).group(1)
     print('authorName:', authorName, '\nillusterName:', illusterName)
+    sender.sigChangeStatus.emit('authorName:' + authorName)
+    sender.sigChangeStatus.emit('illusterName:' + illusterName)
     tempIntroduction = soup.select(
         'html body div.content div.container div.row-fluid div.span9 div.well div.row-fluid div.span10 p')
     findIntroduction = re.compile(r'<p style="width:42em; text-indent: 2em;">(.*)</p>')
@@ -58,7 +74,7 @@ def parseVolume(url):
     tempCoverUrl = soup.select(
         'html body div.content div.container div.row-fluid div.span9 div.well div.row-fluid div.span2 div.lk-book-cover a')
     findCoverUrl = re.compile(r'<img src="(.*)"/>')
-    coverUrl = findCoverUrl.search(str(tempCoverUrl)).group(1)
+    coverUrl = findCoverUrl.search(str(tempCoverUrl)).group(1) if not coverPath else coverPath
     newEpub = Epub(volumeName, volumeNumber, authorName, illusterName, introduction, coverUrl)
     th = []
     for i, link in enumerate(chapterLink):
@@ -68,9 +84,10 @@ def parseVolume(url):
     for t in th:
         t.join()
 
-    print('网页获取完成')
-    print('开始生成epub')
-    createEpub(newEpub)
+    print('网页获取完成\n开始生成epub')
+    sender.sigChangeStatus.emit('网页获取完成,开始生成epub')
+    createEpub(newEpub, epubFilePath, coverPath)
+    sender.sigDone.emit()
 
 
 class Epub():
@@ -98,6 +115,7 @@ def parseChapter(url, newEpub, number):
     chapterName = findChapterName.search(str(tempChapterName)).group(1)
     newChapterName = chapterName[:chapterName.index('章') + 1] + ' ' + chapterName[chapterName.index('章') + 1:]
     print(newChapterName)
+    sender.sigChangeStatus.emit(newChapterName)
     tempChapterContent = soup.select('div#J_view')
     findContent = re.compile(r'">(.*)<br/>')
     content = []
@@ -107,7 +125,7 @@ def parseChapter(url, newEpub, number):
 
 
 #建文件夹 下cover 生成单章节 目录 打包zip
-def createEpub(newEpub):
+def createEpub(newEpub, epubFilePath='', coverPath=''):
     coverUrl = 'http://lknovel.lightnovel.cn' + newEpub.coverUrl
 
     #创建需要的文件夹
@@ -121,22 +139,34 @@ def createEpub(newEpub):
     if not os.path.exists(os.path.join(basePath, 'Images')):
         os.mkdir(os.path.join(os.path.join(basePath, 'Images')))
     shutil.copy2('./files/style.css', os.path.join(os.path.join(basePath, 'Styles')))
-    coverPath = os.path.join(os.path.join(basePath, 'Images'), coverUrl.split('/')[-1])
-    downloadQueue.put((coverUrl, basePath))
+    if not coverPath:
+        downloadQueue.put((coverUrl, basePath))
+    else:
+        tempCoverPath = os.path.join(os.path.join(basePath, 'Images'), coverUrl.split('/')[-1])
+        print(coverPath, tempCoverPath)
+        shutil.copyfile(coverPath, tempCoverPath)
     createText(newEpub, os.path.join(os.path.join(basePath, 'Text')), basePath)
 
     #打包epub文件
-    zip = zipfile.ZipFile(newEpub.bookName + '.epub', 'w', zipfile.ZIP_DEFLATED)
-    for dirPath, dirNames, fileNames in os.walk(basePath):
-        for file in fileNames:
-            f = os.path.join(dirPath, file)
-            zip.write(f, 'OEBPS//' + f[len(basePath) + 1:])
-    zip.write('./files/container.xml', 'META-INF//container.xml')
-    zip.write('./files/mimetype', 'mimetype')
+    with zipfile.ZipFile(newEpub.bookName + '.epub', 'w', zipfile.ZIP_DEFLATED) as zip:
+        for dirPath, dirNames, fileNames in os.walk(basePath):
+            for file in fileNames:
+                f = os.path.join(dirPath, file)
+                zip.write(f, 'OEBPS//' + f[len(basePath) + 1:])
+        zip.write('./files/container.xml', 'META-INF//container.xml')
+        zip.write('./files/mimetype', 'mimetype')
     print('已生成：', newEpub.bookName + '.epub\n\n')
+    sender.sigChangeStatus.emit('已生成：' + newEpub.bookName + '.epub')
 
     #删除临时文件
     shutil.rmtree(basePath)
+
+    #是否移动文件
+    if epubFilePath:
+        if os.path.exists(epubFilePath+'/'+newEpub.bookName + '.epub'):
+            sender.sigWarningMessage.emit('文件名已存在','epub保存在lknovel文件夹')
+        else:
+            shutil.move(newEpub.bookName + '.epub', epubFilePath)
 
 
 #下载图片专用
@@ -144,6 +174,7 @@ def download():
     while not downloadQueue.empty():
         url, basePath = downloadQueue.get()
         print('downloading:', url)
+        sender.sigChangeStatus.emit('downloading:' + url.split('/')[-1])
         path = os.path.join(os.path.join(basePath, 'Images'), url.split('/')[-1])
         r = requests.get(url, stream=True)
         if r.status_code == requests.codes.ok:
@@ -182,6 +213,7 @@ def createText(newEpub, textPath, basePath):
     for i in sorted(newEpub.chapter, key=lambda chapter: chapter[0]):
         htmlContent = []
         print('正在生成', i[1])
+        sender.sigChangeStatus.emit('正在生成' + i[1])
         htmlHead1 = '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>'
         htmlHead2 = '</title>\n</head>\n<body>\n<div>'
         htmlContent.append(htmlHead1 + i[1] + htmlHead2)
@@ -269,7 +301,10 @@ def createText(newEpub, textPath, basePath):
     htmlContent.append('<item href="Styles/style.css" id="style.css" media-type="text/css" />')
     for dirPath, dirNames, fileNames in os.walk(os.path.join(basePath, 'Images')):
         for file in fileNames:
-            htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/jpeg" />')
+            if file.split('.')[-1]=='jpg':
+                htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/jpeg" />')
+            else:
+                htmlContent.append('<item href="Images/' + file + '" id="' + file + '" media-type="image/png" />')
     htmlContent.append('</manifest>')
     htmlContent.append('<spine toc="ncx">')
     htmlContent.append(
