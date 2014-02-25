@@ -40,7 +40,7 @@ http://lknovel.lightnovel.cn/main/vollist/726.html
 
 3. 保存路径 默认为桌面
 
-![GUIVersion截图](https://raw.github.com/bebound/lknovel/master/screenShot/3.PNG)
+![GUIVersion截图](https://raw.github.com/bebound/lknovel/master/screenShot/3.png)
 
 
 ##未来计划
