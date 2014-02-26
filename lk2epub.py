@@ -60,7 +60,7 @@ def parseVolume(url, epubFilePath='', coverPath=''):
             chapterLink.append(findChapterLink.search(str(i)).group(1))
         tempAuthorName = soup.select('table.lk-book-detail td')
         findAuthorName = re.compile(r'target="_blank">(.*)</a></td>')
-        findIllusterName = re.compile(r'<td> (.*)</td>')
+        findIllusterName = re.compile(r'<td>(.*)</td>')
         authorName = findAuthorName.search(str(tempAuthorName[3])).group(1)
         illusterName = findIllusterName.search(str(tempAuthorName[5])).group(1)
         print('authorName:', authorName, '\nillusterName:', illusterName)
