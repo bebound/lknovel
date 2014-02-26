@@ -11,7 +11,7 @@
 - [BeautifulSoup4](http://www.crummy.com/software/BeautifulSoup/ "BeautifulSoup4")
 
 ##绿色exe下载
-[GUIVersion build140226](https://mega.co.nz/#!HU8EHDAB!JW18c2BNHlyqwCHWec_DhCbCwb8si77Vheoa5xVeT24)
+[GUIVersion build140226](https://mega.co.nz/#!vVEkRbZB!GYcGMHjnJjBEnLbgeLqTlCH5oPtes6EBarzFDUX5os0)
 
 ##使用说明
 
@@ -54,6 +54,7 @@ http://lknovel.lightnovel.cn/main/vollist/726.html
 - 未下载完建立空图片问题
 - 清理临时文件
 - lk2epub取消对qt的依赖
+- 修复sigil提示的错误
 
 
 ##License

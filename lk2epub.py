@@ -18,8 +18,8 @@ downloadQueue = queue.Queue()
 class SenderObject(QtCore.QObject):
     sigChangeStatus = QtCore.pyqtSignal(str)
     sigWarningMessage = QtCore.pyqtSignal(str, str)
-    sigErrorMessage = QtCore.pyqtSignal()
-    sigDone = QtCore.pyqtSignal()
+    sigInformationMessage = QtCore.pyqtSignal(str, str)
+    sigButton=QtCore.pyqtSignal()
 
 
 sender = SenderObject()
@@ -35,7 +35,6 @@ def parseList(url, epubFilePath='', coverPath=''):
     for i in tempVolumeLink:
         volumeLink = findVolumeLink.search(str(i)).group(1)
         parseVolume(volumeLink, epubFilePath, coverPath)
-    sender.sigDone.emit()
 
 
 #提取每卷信息
@@ -88,10 +87,10 @@ def parseVolume(url, epubFilePath='', coverPath=''):
         print('网页获取完成\n开始生成epub')
         sender.sigChangeStatus.emit('网页获取完成,开始生成epub')
         createEpub(newEpub, epubFilePath, coverPath)
-        sender.sigDone.emit()
+
     except Exception as e:
         sender.sigWarningMessage.emit('错误', str(e))
-        sender.sigErrorMessage.emit()
+        sender.sigButton.emit()
         raise e
 
 
@@ -130,7 +129,7 @@ def parseChapter(url, newEpub, number):
         newEpub.addChapter((number, newChapterName, content))
     except Exception as e:
         sender.sigWarningMessage.emit('错误', str(e))
-        sender.sigErrorMessage.emit()
+        sender.sigButton.emit()
         raise e
 
 
@@ -166,7 +165,6 @@ def createEpub(newEpub, epubFilePath='', coverPath=''):
         zip.write('./files/container.xml', 'META-INF//container.xml')
         zip.write('./files/mimetype', 'mimetype')
     print('已生成：', newEpub.bookName + '.epub\n\n')
-    sender.sigChangeStatus.emit('已生成：' + newEpub.bookName + '.epub')
 
     #删除临时文件
     shutil.rmtree(basePath)
@@ -175,18 +173,21 @@ def createEpub(newEpub, epubFilePath='', coverPath=''):
     if epubFilePath:
         if os.path.exists(epubFilePath + '/' + newEpub.bookName + '.epub'):
             sender.sigWarningMessage.emit('文件名已存在', 'epub保存在lknovel文件夹')
+            sender.sigButton.emit()
         else:
             shutil.move(newEpub.bookName + '.epub', epubFilePath)
+            sender.sigInformationMessage.emit('已生成', newEpub.bookName + '.epub')
+            sender.sigButton.emit()
 
 
 #下载图片专用
 def download():
     while not downloadQueue.empty():
         url, basePath = downloadQueue.get()
-        print('downloading:', url)
-        sender.sigChangeStatus.emit('downloading:' + url.split('/')[-1])
         path = os.path.join(os.path.join(basePath, 'Images'), url.split('/')[-1])
         if not os.path.exists(path):
+            print('downloading:', url)
+            sender.sigChangeStatus.emit('downloading:' + url.split('/')[-1])
             r = requests.get(url, stream=True)
             if r.status_code == requests.codes.ok:
                 with open(path, 'wb') as f:
