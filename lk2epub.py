@@ -186,11 +186,12 @@ def download():
         print('downloading:', url)
         sender.sigChangeStatus.emit('downloading:' + url.split('/')[-1])
         path = os.path.join(os.path.join(basePath, 'Images'), url.split('/')[-1])
-        r = requests.get(url, stream=True)
-        if r.status_code == requests.codes.ok:
-            with open(path, 'wb') as f:
-                for chunk in r.iter_content():
-                    f.write(chunk)
+        if not os.path.exists(path):
+            r = requests.get(url, stream=True)
+            if r.status_code == requests.codes.ok:
+                with open(path, 'wb') as f:
+                    for chunk in r.iter_content(256 * 1024):
+                        f.write(chunk)
         downloadQueue.task_done()
 
 
