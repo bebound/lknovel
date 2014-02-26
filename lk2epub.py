@@ -254,12 +254,12 @@ def createText(newEpub, textPath, basePath):
     htmlHead1 = '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>'
     htmlHead2 = '</title>\n</head>\n<body>\n<div class="title">'
     htmlContent.append(htmlHead1 + newEpub.volumeName + htmlHead2)
-    htmlContent.append('<h1 class="right sigil_not_in_toc" id="heading_1">' + newEpub.volumeName + '</h1>')
-    htmlContent.append('<h2 class="right sigil_not_in_toc" id="heading_4">' + newEpub.volumeNumber + '</h2>')
+    htmlContent.append('<h1>' + newEpub.volumeName + '</h1>')
+    htmlContent.append('<h2>' + newEpub.volumeNumber + '</h2>')
     htmlContent.append('<div>\n<br />\n</div>')
-    htmlContent.append('<h3 class="right sigil_not_in_toc" id="heading_3">作者：' + newEpub.authorName + '</h3>')
-    htmlContent.append('<h3 class="right sigil_not_in_toc" id="heading_5">插画：' + newEpub.illusterName + '</h3>')
-    htmlContent.append('<h3>制作：<a target="_blank" href="http://www.github.com/bebound/lknovel">lknoveltoepub</a></h3>')
+    htmlContent.append('<h3>作者：' + newEpub.authorName + '</h3>')
+    htmlContent.append('<h3>插画：' + newEpub.illusterName + '</h3>')
+    htmlContent.append('<h3>制作：<a target="_blank" href="http://www.github.com/bebound/lknovel">lknovel</a></h3>')
     htmlContent.append('</div>\n</body>\n</html>')
     tempContent = ''
     for line in htmlContent:

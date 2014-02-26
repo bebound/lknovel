@@ -50,6 +50,10 @@ div {
 	padding: 0px;
 	text-align: justify;
 }
+a {
+	color: #4183C4;
+    text-decoration: none;
+}
 p {
 	text-indent: 2em;
 	display: block;
@@ -177,11 +181,21 @@ dl.logo-maker > dt {
 	margin-bottom: 0.3em;
 }
 .title {
-	border-style: ridge groove none none;
-	border-color: #4682b4;
-	border-width: 6px;
-	margin: 12px;
-	padding: 8px;
+    border-radius: 3px;
+    padding: 3px;
+    background-color: #EAEAEA;
+    background-image: linear-gradient(#FAFAFA, #EAEAEA);
+    background-repeat: repeat-x;
+    border-color: #CACACA #CACACA -moz-use-text-color;
+    border-style: solid solid none;
+    border-width: 1px 1px 0;
+    color: #555555;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 20px;
+    padding: 10px;
+    text-shadow: 0 1px 0 #FFFFFF;
 }
 .zuozhe {
 	font-size:1.2em;
