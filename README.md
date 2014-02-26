@@ -51,6 +51,8 @@ http://lknovel.lightnovel.cn/main/vollist/726.html
 
 - 新的css样式 目前使用的是轻国EPUB组的css 希望可以找到一个更好看的样式
 - GUIVersion图标
+- 未下载完建立空图片问题
+- 清理临时文件
 
 
 ##License
