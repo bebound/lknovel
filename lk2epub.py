@@ -284,7 +284,7 @@ def createText(newEpub, textPath, basePath):
 
     #下载相关图片
     th = []
-    for i in range(10):
+    for i in range(5):
         t = threading.Thread(target=download)
         t.start()
         th.append(t)
