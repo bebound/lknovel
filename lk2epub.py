@@ -9,20 +9,26 @@ import zipfile
 import requests
 import sys
 from bs4 import BeautifulSoup
-from PyQt4 import QtCore
 
-debug = 1
+
 downloadQueue = queue.Queue()
+debug = 1
+hasQT = False
 
+try:
+    from PyQt4 import QtCore
+    hasQT = True
+except:
+    pass
 
-class SenderObject(QtCore.QObject):
-    sigChangeStatus = QtCore.pyqtSignal(str)
-    sigWarningMessage = QtCore.pyqtSignal(str, str)
-    sigInformationMessage = QtCore.pyqtSignal(str, str)
-    sigButton=QtCore.pyqtSignal()
+if hasQT:
+    class SenderObject(QtCore.QObject):
+        sigChangeStatus = QtCore.pyqtSignal(str)
+        sigWarningMessage = QtCore.pyqtSignal(str, str)
+        sigInformationMessage = QtCore.pyqtSignal(str, str)
+        sigButton = QtCore.pyqtSignal()
 
-
-sender = SenderObject()
+    sender = SenderObject()
 
 
 #从volist中提取每一卷的网址
@@ -41,7 +47,8 @@ def parseList(url, epubFilePath='', coverPath=''):
 def parseVolume(url, epubFilePath='', coverPath=''):
     try:
         print('getting:', url)
-        sender.sigChangeStatus.emit('getting:' + url)
+        if hasQT:
+            sender.sigChangeStatus.emit('getting:' + url)
         r = requests.get(url)
         r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text)
@@ -54,7 +61,8 @@ def parseVolume(url, epubFilePath='', coverPath=''):
         volumeName = tempvolumeName[2].strip()
         volumeNumber = tempvolumeName[3].strip()
         print('volumeName:', volumeName, '\nvolumeNumber:', volumeNumber)
-        sender.sigChangeStatus.emit('volumeName:' + volumeName + '\nvolumeNumber:' + volumeNumber)
+        if hasQT:
+            sender.sigChangeStatus.emit('volumeName:' + volumeName + '\nvolumeNumber:' + volumeNumber)
         chapterLink = []
         for i in tempChapterLink:
             chapterLink.append(findChapterLink.search(str(i)).group(1))
@@ -64,8 +72,9 @@ def parseVolume(url, epubFilePath='', coverPath=''):
         authorName = findAuthorName.search(str(tempAuthorName[3])).group(1)
         illusterName = findIllusterName.search(str(tempAuthorName[5])).group(1)
         print('authorName:', authorName, '\nillusterName:', illusterName)
-        sender.sigChangeStatus.emit('authorName:' + authorName)
-        sender.sigChangeStatus.emit('illusterName:' + illusterName)
+        if hasQT:
+            sender.sigChangeStatus.emit('authorName:' + authorName)
+            sender.sigChangeStatus.emit('illusterName:' + illusterName)
         tempIntroduction = soup.select(
             'html body div.content div.container div.row-fluid div.span9 div.well div.row-fluid div.span10 p')
         findIntroduction = re.compile(r'<p style="width:42em; text-indent: 2em;">(.*)</p>')
@@ -85,15 +94,17 @@ def parseVolume(url, epubFilePath='', coverPath=''):
             t.join()
 
         print('网页获取完成\n开始生成epub')
-        sender.sigChangeStatus.emit('网页获取完成,开始生成epub')
+        if hasQT:
+            sender.sigChangeStatus.emit('网页获取完成,开始生成epub')
         createEpub(newEpub, epubFilePath, coverPath)
 
     except Exception as e:
-        sender.sigWarningMessage.emit('错误', str(e))
-        sender.sigButton.emit()
+        if hasQT:
+            sender.sigWarningMessage.emit('错误', str(e))
+            sender.sigButton.emit()
         raise e
 
-
+#Epub内容
 class Epub():
     def __init__(self, volumeName, volumeNumber, authorName, illusterName, introduction, coverUrl):
         self.volumeName = volumeName
@@ -110,6 +121,7 @@ class Epub():
         self.chapter.append(tempChapter)
 
 
+#章节信息提取
 def parseChapter(url, newEpub, number):
     try:
         r = requests.get(url)
@@ -120,7 +132,8 @@ def parseChapter(url, newEpub, number):
         chapterName = findChapterName.search(str(tempChapterName)).group(1)
         newChapterName = chapterName[:chapterName.index('章') + 1] + ' ' + chapterName[chapterName.index('章') + 1:]
         print(newChapterName)
-        sender.sigChangeStatus.emit(newChapterName)
+        if hasQT:
+            sender.sigChangeStatus.emit(newChapterName)
         tempChapterContent = soup.select('div#J_view')
         findContent = re.compile(r'">(.*)<br/>')
         content = []
@@ -128,8 +141,9 @@ def parseChapter(url, newEpub, number):
             content.append(findContent.search(i).group(1))
         newEpub.addChapter((number, newChapterName, content))
     except Exception as e:
-        sender.sigWarningMessage.emit('错误', str(e))
-        sender.sigButton.emit()
+        if hasQT:
+            sender.sigWarningMessage.emit('错误', str(e))
+            sender.sigButton.emit()
         raise e
 
 
@@ -172,12 +186,14 @@ def createEpub(newEpub, epubFilePath='', coverPath=''):
     #是否移动文件
     if epubFilePath:
         if os.path.exists(epubFilePath + '/' + newEpub.bookName + '.epub'):
-            sender.sigWarningMessage.emit('文件名已存在', 'epub保存在lknovel文件夹')
-            sender.sigButton.emit()
+            if hasQT:
+                sender.sigWarningMessage.emit('文件名已存在', 'epub保存在lknovel文件夹')
+                sender.sigButton.emit()
         else:
             shutil.move(newEpub.bookName + '.epub', epubFilePath)
-            sender.sigInformationMessage.emit('已生成', newEpub.bookName + '.epub')
-            sender.sigButton.emit()
+            if hasQT:
+                sender.sigInformationMessage.emit('已生成', newEpub.bookName + '.epub')
+                sender.sigButton.emit()
 
 
 #下载图片专用
@@ -187,7 +203,8 @@ def download():
         path = os.path.join(os.path.join(basePath, 'Images'), url.split('/')[-1])
         if not os.path.exists(path):
             print('downloading:', url)
-            sender.sigChangeStatus.emit('downloading:' + url.split('/')[-1])
+            if hasQT:
+                sender.sigChangeStatus.emit('downloading:' + url.split('/')[-1])
             r = requests.get(url, stream=True)
             if r.status_code == requests.codes.ok:
                 with open(path, 'wb') as f:
@@ -225,7 +242,8 @@ def createText(newEpub, textPath, basePath):
     for i in sorted(newEpub.chapter, key=lambda chapter: chapter[0]):
         htmlContent = []
         print('正在生成', i[1])
-        sender.sigChangeStatus.emit('正在生成' + i[1])
+        if hasQT:
+            sender.sigChangeStatus.emit('正在生成' + i[1])
         htmlHead1 = '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>'
         htmlHead2 = '</title>\n</head>\n<body>\n<div>'
         htmlContent.append(htmlHead1 + i[1] + htmlHead2)
