@@ -17,6 +17,7 @@ hasQT = False
 
 try:
     from PyQt4 import QtCore
+
     hasQT = True
 except:
     pass
@@ -103,6 +104,7 @@ def parseVolume(url, epubFilePath='', coverPath=''):
             sender.sigWarningMessage.emit('错误', str(e))
             sender.sigButton.emit()
         raise e
+
 
 #Epub内容
 class Epub():
@@ -227,10 +229,10 @@ def createText(newEpub, textPath, basePath):
     htmlHead1 = '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>封面</title>\n</head>\n<body>'
     htmlContent.append(htmlHead1)
     htmlContent.append(
-        '<div class="cover"><img alt="" class="bb" src="../Images/' + newEpub.coverUrl.split('/')[-1] + '" /></div>')
-    htmlContent.append('<h4>简介</h4>')
+        '<div class="cover"><img alt=""src="../Images/' + newEpub.coverUrl.split('/')[-1] + '" /></div>')
+    htmlContent.append('<div class="entry">\n<span class="title">简介</span>\n<div class="entry-content">')
     htmlContent.append('<p>' + newEpub.introduction + '</p>')
-    htmlContent.append('</body>\n</html>')
+    htmlContent.append('</div></div></body></html>')
     tempContent = ''
     for line in htmlContent:
         tempContent += line
@@ -255,7 +257,7 @@ def createText(newEpub, textPath, basePath):
                 if not imageUrl.startswith('http://'):
                     imageUrl = 'http://lknovel.lightnovel.cn' + imageUrl
                 downloadQueue.put((imageUrl, basePath))
-                imageP = '<div class="illus"><img alt="" src="../Images/' + imageUrl.split('/')[
+                imageP = '<div class="illust"><img alt="" src="../Images/' + imageUrl.split('/')[
                     -1] + '" /></div>\n<br/>'
                 htmlContent.append(imageP)
             else:
@@ -271,15 +273,15 @@ def createText(newEpub, textPath, basePath):
     #生成Title.html
     htmlContent = []
     htmlHead1 = '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>'
-    htmlHead2 = '</title>\n</head>\n<body>\n<div class="title">'
+    htmlHead2 = '</title>\n</head>\n<body>\n<div class="entry">'
     htmlContent.append(htmlHead1 + newEpub.volumeName + htmlHead2)
-    htmlContent.append('<h1>' + newEpub.volumeName + '</h1>')
-    htmlContent.append('<h2>' + newEpub.volumeNumber + '</h2>')
+    htmlContent.append('<span class="title">' + newEpub.volumeName + '</span>')
+    htmlContent.append('<div class="entry-content">\n<h2>' + newEpub.volumeNumber + '</h2>')
     htmlContent.append('<div>\n<br />\n</div>')
     htmlContent.append('<h3>作者：' + newEpub.authorName + '</h3>')
     htmlContent.append('<h3>插画：' + newEpub.illusterName + '</h3>')
     htmlContent.append('<h3>制作：<a target="_blank" href="http://www.github.com/bebound/lknovel">lknovel</a></h3>')
-    htmlContent.append('</div>\n</body>\n</html>')
+    htmlContent.append('</div>\n</div>\n</body>\n</html>')
     tempContent = ''
     for line in htmlContent:
         tempContent += line
@@ -290,10 +292,11 @@ def createText(newEpub, textPath, basePath):
     htmlContent = []
     htmlContent.append(
         '<?xml version="1.0" encoding="utf-8" standalone="no"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<link href="../Styles/style.css" rel="stylesheet" type="text/css" />\n<title>目录</title>\n</head>')
-    htmlContent.append('<body>\n<div>\n<p class="cont">目录</p>\n<hr class="line-index" />\n<ul class="contents">\n')
+    htmlContent.append(
+        '<body>\n<div class="entry">\n<span class="title">目录</span>\n<div class="entry-content">\n<ul class="contents">\n')
     for i in sorted(newEpub.chapter, key=lambda chapter: chapter[0]):
         htmlContent.append('<li class="c-rules"><a href="../Text/' + str(i[0]) + '.html">' + i[1] + '</a></li>')
-    htmlContent.append('</ul>\n</div>\n</body>\n</html>')
+    htmlContent.append('</ul>\n</div>\n</div>\n</body>\n</html>')
     tempContent = ''
     for line in htmlContent:
         tempContent += line
