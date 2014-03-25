@@ -53,7 +53,8 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.coverButton.clicked.connect(self.selectCover)
         lk2epub.sender.sigChangeStatus.connect(self.changeStatus)
         lk2epub.sender.sigWarningMessage.connect(self.showWarningMessage)
-        lk2epub.sender.sigDone.connect(self.workDone)
++       lk2epub.sender.sigInformationMessage.connect(self.showInformationMessage)
++       lk2epub.sender.sigButton.connect(lambda: self.startButton.setEnabled(True))
         self.helpAction.triggered.connect(self.openHelpWidget)
         self.aboutAction.triggered.connect(self.openAboutWidget)
 
