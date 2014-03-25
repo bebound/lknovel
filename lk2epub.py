@@ -53,14 +53,12 @@ def parseVolume(url, epubFilePath='', coverPath=''):
         r = requests.get(url)
         r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text)
-        tempvolumeName = str(soup.select(
-            'html body div.content div.container div.row-fluid div.span9 div.well div.row-fluid div.span10 h1.ft-24')).split(
-            '\n')
+        tempvolumeName = str(soup.select('h1.ft-24 strong'))[1:-1].replace('</strong>','').split('\n')
         tempChapterLink = soup.select(
             'body div.content div.container div.row-fluid div.span9 div.well div.row-fluid ul.lk-chapter-list li')
         findChapterLink = re.compile(r'<a href="(.*)">')
-        volumeName = tempvolumeName[2].strip()
-        volumeNumber = tempvolumeName[3].strip()
+        volumeName = tempvolumeName[1].strip()
+        volumeNumber = tempvolumeName[2].strip()
         print('volumeName:', volumeName, '\nvolumeNumber:', volumeNumber)
         if hasQT:
             sender.sigChangeStatus.emit('volumeName:' + volumeName + '\nvolumeNumber:' + volumeNumber)
