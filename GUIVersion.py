@@ -35,6 +35,7 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         QtGui.QMainWindow.__init__(self, parent)
         self.setupUi(self)
         self.setFixedSize(520, 250)
+        self.urlLineEdit.installEventFilter(self)
         self.setWindowTitle('lknovel-轻之国度在线轻小说转epub')
         self.helpAction = QtGui.QAction('&Help', self)
         self.helpAction.setStatusTip('使用说明')
@@ -53,8 +54,8 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.coverButton.clicked.connect(self.selectCover)
         lk2epub.sender.sigChangeStatus.connect(self.changeStatus)
         lk2epub.sender.sigWarningMessage.connect(self.showWarningMessage)
-+       lk2epub.sender.sigInformationMessage.connect(self.showInformationMessage)
-+       lk2epub.sender.sigButton.connect(lambda: self.startButton.setEnabled(True))
+        lk2epub.sender.sigInformationMessage.connect(self.showInformationMessage)
+        lk2epub.sender.sigButton.connect(lambda: self.startButton.setEnabled(True))
         self.helpAction.triggered.connect(self.openHelpWidget)
         self.aboutAction.triggered.connect(self.openAboutWidget)
 
@@ -108,6 +109,16 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
 
     def changeStatus(self, text):
         self.statusbar.showMessage(text)
+
+    #窗口激活时检测剪贴板 符合url规则自动填充至urlLineEdit
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.WindowActivate:
+            clipboardText = QtGui.QApplication.clipboard().text()
+            check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d+).html')
+            check2 = re.compile(r'http://lknovel.lightnovel.cn/main/book/(\d+).html')
+            if check.search(clipboardText) or check2.search(clipboardText):
+                self.urlLineEdit.setText(clipboardText)
+        return False
 
     def showWarningMessage(self, title, content):
         QtGui.QMessageBox.warning(self, title, content, buttons=QtGui.QMessageBox.Ok,
