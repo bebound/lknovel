@@ -11,7 +11,7 @@
 - [BeautifulSoup4](http://www.crummy.com/software/BeautifulSoup/ "BeautifulSoup4")
 
 ##绿色exe下载
-[GUIVersion build140325](https://mega.co.nz/#!rEsSFAwT!CHoTaQY5TC-72Qu7lTv6yn7T2VVuHgFjzmAKx9ZkF6A)
+[GUIVersion build140328](https://mega.co.nz/#!uEEm3Qha!ExaZyHe1W3G5LaVJw8bXqmD9m_QYbCLFrahrSeFIq08)
 
 ##使用说明
 
