@@ -43,7 +43,11 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.aboutAction.setStatusTip('关于')
         self.menubar.addAction(self.helpAction)
         self.menubar.addAction(self.aboutAction)
-        self.savePath = os.path.join(os.path.expanduser('~'), 'Desktop')
+        self.setting = QtCore.QSettings('kk', 'lknovel')
+        if self.setting.value('savePath'):
+            self.savePath=self.setting.value('savePath')
+        else:
+            self.savePath = os.path.join(os.path.expanduser('~'), 'Desktop')
         self.directoryLineEdit.setText(self.savePath)
         self.coverPath = ''
 
@@ -68,6 +72,7 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         if check.search(url) or check2.search(url):
             ok = 1
         if ok:
+            self.setting.setValue('savePath', self.savePath)
             if url.split('/')[-2] == 'book':
                 t = threading.Thread(target=lk2epub.parseVolume, args=(url, self.savePath, self.coverPath))
                 t.start()
