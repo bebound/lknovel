@@ -13,7 +13,7 @@ class HelpWidget(QtGui.QDialog, ui_helpWidget.Ui_Dialog):
     def __init__(self, parent=None):
         QtGui.QDialog.__init__(self, parent)
         self.setupUi(self)
-        self.setFixedSize(380, 190)
+        self.setFixedSize(380, 200)
 
         self.pushButton.clicked.connect(lambda: self.close())
 
@@ -35,7 +35,7 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         QtGui.QMainWindow.__init__(self, parent)
         self.setupUi(self)
         self.setFixedSize(520, 250)
-        self.urlLineEdit.installEventFilter(self)
+        self.installEventFilter(self)
         self.setWindowTitle('lknovel-轻之国度在线轻小说转epub')
         self.helpAction = QtGui.QAction('&Help', self)
         self.helpAction.setStatusTip('使用说明')
@@ -45,7 +45,7 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.menubar.addAction(self.aboutAction)
         self.setting = QtCore.QSettings('kk', 'lknovel')
         if self.setting.value('savePath'):
-            self.savePath=self.setting.value('savePath')
+            self.savePath = self.setting.value('savePath')
         else:
             self.savePath = os.path.join(os.path.expanduser('~'), 'Desktop')
         self.directoryLineEdit.setText(self.savePath)
@@ -65,20 +65,19 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
 
 
     def createEpub(self):
-        url = self.urlLineEdit.text()
-        ok = 0
-        check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d+).html')
-        check2 = re.compile(r'http://lknovel.lightnovel.cn/main/book/(\d+).html')
-        if check.search(url) or check2.search(url):
-            ok = 1
+        urls = self.urlTextEdit.toPlainText().strip()
+        totalCheck = re.compile(
+            r'^(((http://lknovel.lightnovel.cn/main/vollist/(\d+).html)|(http://lknovel.lightnovel.cn/main/book/(\d+).html))\s*)+$')
+        ok = 1
+        for url in urls.split('\n'):
+            if not totalCheck.search(url.strip()):
+                ok = 0
+                break
         if ok:
             self.setting.setValue('savePath', self.savePath)
-            if url.split('/')[-2] == 'book':
-                t = threading.Thread(target=lk2epub.parseVolume, args=(url, self.savePath, self.coverPath))
-                t.start()
-            else:
-                t = threading.Thread(target=lk2epub.parseList, args=(url, self.savePath, self.coverPath))
-                t.start()
+            t = threading.Thread(target=lk2epub.chooseParse,
+                                 args=(' '.join(urls.split('\n')), self.savePath, self.coverPath))
+            t.start()
             self.startButton.setEnabled(False)
         else:
             self.sigWarningMessage.emit('网址错误',
@@ -86,7 +85,7 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
 
 
     def selectSaveDirectory(self):
-        tempPath = str(QtGui.QFileDialog.getExistingDirectory(self, "选择文件夹"))
+        tempPath = str(QtGui.QFileDialog.getExistingDirectory(self, "选择文件夹", self.savePath))
         if tempPath:
             self.savePath = tempPath
             self.directoryLineEdit.setText(self.savePath)
@@ -119,10 +118,10 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.WindowActivate:
             clipboardText = QtGui.QApplication.clipboard().text()
-            check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d+).html')
-            check2 = re.compile(r'http://lknovel.lightnovel.cn/main/book/(\d+).html')
-            if check.search(clipboardText) or check2.search(clipboardText):
-                self.urlLineEdit.setText(clipboardText)
+            totalCheck = re.compile(
+                r'^(((http://lknovel.lightnovel.cn/main/vollist/(\d+).html)|(http://lknovel.lightnovel.cn/main/book/(\d+).html))\s*)+$')
+            if totalCheck.search(clipboardText):
+                self.urlTextEdit.setText(clipboardText)
         return False
 
     def showWarningMessage(self, title, content):

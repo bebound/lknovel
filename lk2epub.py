@@ -381,19 +381,24 @@ def createText(newEpub, textPath, basePath):
 
 def main():
     if len(sys.argv) < 2:
-        url = input("输入网址:")
+        urls = input("输入网址:")
     else:
-        url = sys.argv[1]
+        urls = sys.argv[1]
+    chooseParse(urls)
+
+
+def chooseParse(urls, epubFilePath='', coverPath=''):
     ok = 0
-    check = re.compile(r'http://lknovel.lightnovel.cn/main/vollist/(\d+).html')
-    check2 = re.compile(r'http://lknovel.lightnovel.cn/main/book/(\d+).html')
-    if check.search(url) or check2.search(url):
+    totalCheck = re.compile(
+        r'^(((http://lknovel.lightnovel.cn/main/vollist/(\d+).html)|(http://lknovel.lightnovel.cn/main/book/(\d+).html))\s*)+$')
+    if totalCheck.search(urls):
         ok = 1
     if ok:
-        if url.split('/')[-2] == 'book':
-            parseVolume(url)
-        else:
-            parseList(url)
+        for url in urls.split(' '):
+            if url.split('/')[-2] == 'book':
+                parseVolume(url, epubFilePath='', coverPath='')
+            else:
+                parseList(url, epubFilePath='', coverPath='')
     else:
         print(
             '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/726.html\nhttp://lknovel.lightnovel.cn/main/book/2664.html')

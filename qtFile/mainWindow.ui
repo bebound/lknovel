@@ -107,16 +107,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="urlLineEdit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_3">
        <property name="sizePolicy">
@@ -142,6 +132,9 @@
         <string>浏览</string>
        </property>
       </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QTextEdit" name="urlTextEdit"/>
      </item>
     </layout>
    </widget>

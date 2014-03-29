@@ -29,7 +29,7 @@ http://lknovel.lightnovel.cn/main/vollist/726.html
 
 ###GUIVersion
 
-1. 网址 输入轻小说在轻之国度的完整地址，系列或单卷均可，例如：
+1. 网址 输入轻小说在轻之国度的完整地址，系列或单卷均可，以回车分割，例如：
 
     http://lknovel.lightnovel.cn/main/book/2664.html
 
