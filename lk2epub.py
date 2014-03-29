@@ -53,7 +53,7 @@ def parseVolume(url, epubFilePath='', coverPath=''):
         r = requests.get(url)
         r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text)
-        tempvolumeName = str(soup.select('h1.ft-24 strong'))[1:-1].replace('</strong>','').split('\n')
+        tempvolumeName = str(soup.select('h1.ft-24 strong'))[1:-1].replace('</strong>', '').split('\n')
         tempChapterLink = soup.select(
             'body div.content div.container div.row-fluid div.span9 div.well div.row-fluid ul.lk-chapter-list li')
         findChapterLink = re.compile(r'<a href="(.*)">')
@@ -150,11 +150,12 @@ def parseChapter(url, newEpub, number):
 #建文件夹 下cover 生成单章节 目录 打包zip
 def createEpub(newEpub, epubFilePath='', coverPath=''):
     coverUrl = 'http://lknovel.lightnovel.cn' + newEpub.coverUrl
-
     #创建需要的文件夹
-    if not os.path.exists(newEpub.bookName):
-        os.mkdir(newEpub.bookName)
-    basePath = os.path.abspath(newEpub.bookName)
+    folderName = re.sub(r'[<>:"/\\|\?\*]', '_', newEpub.bookName)
+    print(folderName)
+    if not os.path.exists(folderName):
+        os.mkdir(folderName)
+    basePath = os.path.abspath(folderName)
     if not os.path.exists(os.path.join(basePath, 'Text')):
         os.mkdir(os.path.join(os.path.join(basePath, 'Text')))
     if not os.path.exists(os.path.join(basePath, 'Styles')):
@@ -171,7 +172,7 @@ def createEpub(newEpub, epubFilePath='', coverPath=''):
     createText(newEpub, os.path.join(os.path.join(basePath, 'Text')), basePath)
 
     #打包epub文件
-    with zipfile.ZipFile(newEpub.bookName + '.epub', 'w', zipfile.ZIP_DEFLATED) as zip:
+    with zipfile.ZipFile(folderName + '.epub', 'w', zipfile.ZIP_DEFLATED) as zip:
         for dirPath, dirNames, fileNames in os.walk(basePath):
             for file in fileNames:
                 f = os.path.join(dirPath, file)
@@ -185,12 +186,12 @@ def createEpub(newEpub, epubFilePath='', coverPath=''):
 
     #是否移动文件
     if epubFilePath:
-        if os.path.exists(epubFilePath + '/' + newEpub.bookName + '.epub'):
+        if os.path.exists(epubFilePath + '/' + folderName + '.epub'):
             if hasQT:
                 sender.sigWarningMessage.emit('文件名已存在', 'epub保存在lknovel文件夹')
                 sender.sigButton.emit()
         else:
-            shutil.move(newEpub.bookName + '.epub', epubFilePath)
+            shutil.move(folderName + '.epub', epubFilePath)
             if hasQT:
                 sender.sigInformationMessage.emit('已生成', newEpub.bookName + '.epub')
                 sender.sigButton.emit()
