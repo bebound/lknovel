@@ -102,6 +102,9 @@ li ul li.c-rules {
     padding: 0;
     text-indent: 0;
     text-align: center;
+}
+
+.cover img {
     border: 1px solid #CACACA;
 }
 
