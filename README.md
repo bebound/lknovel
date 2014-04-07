@@ -2,7 +2,7 @@
 
 轻之国度在线轻小说转epub
 
-![iPhone截图](https://raw.github.com/bebound/lknovel/master/screenShot/2.PNG)
+![iPhone截图](https://raw.github.com/bebound/lknovel/master/screenShot/total.png)
 
 ##使用要求
 
@@ -50,9 +50,8 @@ http://lknovel.lightnovel.cn/main/vollist/726.html
 
 
 - GUIVersion图标
-- 未下载完建立空图片问题
-- 清理临时文件
 - 修复sigil提示的错误
+- 下载进度条
 
 
 ##License
