@@ -158,7 +158,6 @@ def createEpub(newEpub, epubFilePath='', coverPath=''):
     coverUrl = 'http://lknovel.lightnovel.cn' + newEpub.coverUrl
     #创建需要的文件夹
     folderName = re.sub(r'[<>:"/\\|\?\*]', '_', newEpub.bookName)
-    print(folderName)
     if not os.path.exists(folderName):
         os.mkdir(folderName)
     basePath = os.path.abspath(folderName)
@@ -284,11 +283,11 @@ def createText(newEpub, textPath, basePath):
     htmlHead2 = '</title>\n</head>\n<body>\n<div class="entry">'
     htmlContent.append(htmlHead1 + newEpub.volumeName + htmlHead2)
     htmlContent.append('<span class="title">' + newEpub.volumeName + '</span>')
-    htmlContent.append('<div class="entry-content">\n<h2>' + newEpub.volumeNumber + '</h2>')
+    htmlContent.append('<div class="entry-content">\n<h4>' + newEpub.volumeNumber + '</h4>')
     htmlContent.append('<div>\n<br />\n</div>')
-    htmlContent.append('<h3>作者：' + newEpub.authorName + '</h3>')
-    htmlContent.append('<h3>插画：' + newEpub.illusterName + '</h3>')
-    htmlContent.append('<h3>制作：<a target="_blank" href="http://www.github.com/bebound/lknovel">lknovel</a></h3>')
+    htmlContent.append('<p>作者：' + newEpub.authorName + '</p>')
+    htmlContent.append('<p>插画：' + newEpub.illusterName + '</p>')
+    htmlContent.append('<p>制作：<a target="_blank" href="http://www.github.com/bebound/lknovel">lknovel</a></p>')
     htmlContent.append('</div>\n</div>\n</body>\n</html>')
     tempContent = ''
     for line in htmlContent:

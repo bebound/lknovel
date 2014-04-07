@@ -28,20 +28,6 @@ h2 {
     border-bottom: 1px solid #EEE;
 }
 
-h2.subtitle {
-    font-size: 20px;
-}
-
-h3 {
-    font-size: large;
-    line-height: 130%;
-    text-align: center;
-    text-indent: 0;
-    font-weight: bold;
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
-}
-
 h4 {
     font-size: 1.5em;
     text-align: center;
@@ -76,19 +62,15 @@ ul.contents {
     text-indent: 0;
     font-size: 1.06em;
     font-weight: bold;
+    margin-left: 0;
+    padding-left: 1em;
 }
 
 li.c-rules {
+    margin-left: 0;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
     line-height: 1.1em;
-}
-
-li ul li.c-rules {
-    font-size: 15px;
-    margin-left: -1em;
-    line-height: 1.1em;
-    font-weight: normal;
 }
 
 .cont {
@@ -126,8 +108,7 @@ li ul li.c-rules {
 }
 
 .title {
-    font-size: xx-large;
-    line-height: 30px;
+    font-size: 1.5em;
     font-weight: bold;
     text-align: center;
     padding: 10px 10px;
@@ -147,4 +128,8 @@ li ul li.c-rules {
     background-color: #fff;
     border: 1px solid #CACACA;
     padding: 20px;
+}
+
+.entry-content.introduction {
+    text-align: center;
 }
