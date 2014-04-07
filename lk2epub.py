@@ -403,9 +403,9 @@ def chooseParse(urls, epubFilePath='', coverPath=''):
     if ok:
         for url in urls.split(' '):
             if url.split('/')[-2] == 'book':
-                parseVolume(url, epubFilePath='', coverPath='')
+                parseVolume(url, epubFilePath, coverPath)
             else:
-                parseList(url, epubFilePath='', coverPath='')
+                parseList(url, epubFilePath, coverPath)
     else:
         print(
             '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/726.html\nhttp://lknovel.lightnovel.cn/main/book/2664.html')
