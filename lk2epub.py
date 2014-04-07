@@ -213,9 +213,9 @@ def download():
                 sender.sigChangeStatus.emit('downloading:' + url.split('/')[-1])
             r = requests.get(url, stream=True)
             if r.status_code == requests.codes.ok:
+                tempChunk=r.content
                 with open(path, 'wb') as f:
-                    for chunk in r.iter_content(256 * 1024):
-                        f.write(chunk)
+                    f.write(tempChunk)
         downloadQueue.task_done()
 
 
