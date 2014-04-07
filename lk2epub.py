@@ -99,8 +99,9 @@ def parseVolume(url, epubFilePath='', coverPath=''):
 
     except Exception as e:
         if hasQT:
-            sender.sigWarningMessage.emit('错误', str(e))
+            sender.sigWarningMessage.emit('错误', str(e) + '\nat:' + url)
             sender.sigButton.emit()
+        print(url)
         raise e
 
 
@@ -146,7 +147,7 @@ def parseChapter(url, newEpub, number):
         newEpub.addChapter((number, newChapterName, content))
     except Exception as e:
         if hasQT:
-            sender.sigWarningMessage.emit('错误', str(e)+('at')+url)
+            sender.sigWarningMessage.emit('错误', str(e) + ('\nat:') + url)
             sender.sigButton.emit()
         print(url)
         raise e
@@ -191,6 +192,7 @@ def createEpub(newEpub, epubFilePath='', coverPath=''):
 
     #是否移动文件
     if epubFilePath:
+        print(epubFilePath)
         if os.path.exists(epubFilePath + '/' + folderName + '.epub'):
             if hasQT:
                 sender.sigWarningMessage.emit('文件名已存在', 'epub保存在lknovel文件夹')
@@ -213,7 +215,7 @@ def download():
                 sender.sigChangeStatus.emit('downloading:' + url.split('/')[-1])
             r = requests.get(url, stream=True)
             if r.status_code == requests.codes.ok:
-                tempChunk=r.content
+                tempChunk = r.content
                 with open(path, 'wb') as f:
                     f.write(tempChunk)
         downloadQueue.task_done()
