@@ -134,16 +134,21 @@ def parseChapter(url, newEpub, number):
         print(newChapterName)
         if hasQT:
             sender.sigChangeStatus.emit(newChapterName)
-        tempChapterContent = soup.select('div#J_view')
-        findContent = re.compile(r'">(.*)<br/>')
+        tempChapterContent = soup.select('div#J_view div')
+        findContent1 = re.compile(r'">(.*)</div>')
+        findContent2 = re.compile(r'">(.*)</a>')
         content = []
-        for i in str(tempChapterContent).split('\n')[4:-1]:
-            content.append(findContent.search(i).group(1))
+        for i in tempChapterContent[:-1]:
+            if findContent1.search(str(i).replace('</br>', '').replace('\n', '')):
+                content.append(findContent1.search(str(i).replace('</br>', '').replace('\n', '')).group(1))
+            else:
+                content.append(findContent2.search(str(i).replace('</br>', '').replace('\n', '')).group(1))
         newEpub.addChapter((number, newChapterName, content))
     except Exception as e:
         if hasQT:
-            sender.sigWarningMessage.emit('错误', str(e))
+            sender.sigWarningMessage.emit('错误', str(e)+('at')+url)
             sender.sigButton.emit()
+        print(url)
         raise e
 
 
@@ -259,6 +264,8 @@ def createText(newEpub, textPath, basePath):
                 imageP = '<div class="illust"><img alt="" src="../Images/' + imageUrl.split('/')[
                     -1] + '" /></div>\n<br/>'
                 htmlContent.append(imageP)
+            elif line.startswith('<a class="inline"'):
+                pass
             else:
                 htmlContent.append('<p>' + line + '</p>')
         htmlHead3 = '</div>\n</body>\n</html>'
