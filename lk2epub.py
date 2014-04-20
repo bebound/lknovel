@@ -34,7 +34,7 @@ if hasQT:
 
 #从volist中提取每一卷的网址
 def parseList(url, epubFilePath='', coverPath=''):
-    r = requests.get(url)
+    r = requests.get(url, headers=headers)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text)
     tempVolumeLink = soup.select('body div.content div.container dl dd.row div.inline h2.ft-24 strong a')
@@ -50,7 +50,7 @@ def parseVolume(url, epubFilePath='', coverPath=''):
         print('getting:', url)
         if hasQT:
             sender.sigChangeStatus.emit('getting:' + url)
-        r = requests.get(url)
+        r = requests.get(url, headers=headers)
         r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text)
         tempvolumeName = str(soup.select('h1.ft-24 strong'))[1:-1].replace('</strong>', '').split('\n')
@@ -125,7 +125,7 @@ class Epub():
 #章节信息提取
 def parseChapter(url, newEpub, number):
     try:
-        r = requests.get(url)
+        r = requests.get(url, headers=headers)
         r.encoding = 'utf-8'
         soup = BeautifulSoup(r.text)
         tempChapterName = soup.select('html body div.content div.container ul.breadcrumb li.active')
@@ -212,7 +212,7 @@ def download():
             print('downloading:', url)
             if hasQT:
                 sender.sigChangeStatus.emit('downloading:' + url.split('/')[-1])
-            r = requests.get(url, stream=True)
+            r = requests.get(url, headers=headers, stream=True)
             if r.status_code == requests.codes.ok:
                 tempChunk = r.content
                 with open(path, 'wb') as f:
@@ -283,11 +283,12 @@ def createText(newEpub, textPath, basePath):
     htmlHead2 = '</title>\n</head>\n<body>\n<div class="entry">'
     htmlContent.append(htmlHead1 + newEpub.volumeName + htmlHead2)
     htmlContent.append('<span class="title">' + newEpub.volumeName + '</span>')
-    htmlContent.append('<div class="entry-content">\n<h4>' + newEpub.volumeNumber + '</h4>')
+    htmlContent.append('<div class="entry-content introduction">\n<h4>' + newEpub.volumeNumber + '</h4>')
     htmlContent.append('<div>\n<br />\n</div>')
     htmlContent.append('<p>作者：' + newEpub.authorName + '</p>')
-    htmlContent.append('<p>插画：' + newEpub.illusterName + '</p>')
-    htmlContent.append('<p>制作：<a target="_blank" href="http://www.github.com/bebound/lknovel">lknovel</a></p>')
+    if newEpub.illusterName:
+        htmlContent.append('<p>插画：' + newEpub.illusterName + '</p>')
+    htmlContent.append('<p>制作：<a target="_blank" href="http://www.github.com/bebou/lknovel">lknovel</a></p>')
     htmlContent.append('</div>\n</div>\n</body>\n</html>')
     tempContent = ''
     for line in htmlContent:
@@ -411,6 +412,6 @@ def chooseParse(urls, epubFilePath='', coverPath=''):
         print(
             '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/726.html\nhttp://lknovel.lightnovel.cn/main/book/2664.html')
 
-
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0'}
 if __name__ == '__main__':
     main()
