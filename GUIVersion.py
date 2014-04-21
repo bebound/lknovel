@@ -27,6 +27,14 @@ class AboutWidget(QtGui.QDialog, ui_aboutWidget.Ui_Dialog):
         self.pushButton.clicked.connect(lambda: self.close())
 
 
+class DownloadWidget(QtGui.QDialog):
+    def __init__(self, parent=None):
+        QtGui.QDialog.__init__(self, parent)
+
+    def initUI(self):
+        self.downloadTable = QtGui.QTableWidget()
+
+
 class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
     sigWarningMessage = QtCore.pyqtSignal(str, str)
     sigInformationMessage = QtCore.pyqtSignal(str, str)
@@ -74,7 +82,6 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
                 ok = 0
                 break
         if ok:
-            self.setting.setValue('savePath', self.savePath)
             t = threading.Thread(target=lk2epub.chooseParse,
                                  args=(' '.join(urls.split('\n')), self.savePath, self.coverPath))
             t.start()
@@ -89,6 +96,7 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         if tempPath:
             self.savePath = tempPath
             self.directoryLineEdit.setText(self.savePath)
+            self.setting.setValue('savePath', self.savePath)
 
     def selectCover(self):
         tempPath = str(
