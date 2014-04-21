@@ -10,9 +10,6 @@
 - [requests](http://docs.python-requests.org/en/latest/ "requests")
 - [BeautifulSoup4](http://www.crummy.com/software/BeautifulSoup/ "BeautifulSoup4")
 
-##绿色exe下载
-[GUIVersion build140420](https://mega.co.nz/#!PNVSmZpT!JSTiSzx5BGpAMcaAce4pJlHYFkgbXtpzLNyOPBk92hc)
-
 ##使用说明
 
 ###lk2epub
