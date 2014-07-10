@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 downloadQueue = queue.Queue()
 debug = 1
 hasQT = False
+singleThread = False
 
 try:
     from PyQt4 import QtCore
@@ -85,12 +86,16 @@ def parseVolume(url, epubFilePath='', coverPath=''):
         coverUrl = findCoverUrl.search(str(tempCoverUrl)).group(1) if not coverPath else coverPath
         newEpub = Epub(volumeName, volumeNumber, authorName, illusterName, introduction, coverUrl)
         th = []
-        for i, link in enumerate(chapterLink):
-            t = threading.Thread(target=parseChapter, args=(link, newEpub, i))
-            t.start()
-            th.append(t)
-        for t in th:
-            t.join()
+        if not singleThread:
+            for i, link in enumerate(chapterLink):
+                t = threading.Thread(target=parseChapter, args=(link, newEpub, i))
+                t.start()
+                th.append(t)
+            for t in th:
+                t.join()
+        else:
+            for i, link in enumerate(chapterLink):
+                parseChapter(link, newEpub, i);
 
         print('网页获取完成\n开始生成epub')
         if hasQT:
@@ -393,6 +398,12 @@ def main():
         urls = input("输入网址:")
     else:
         urls = sys.argv[1]
+
+    single = input("单线程下载(Y/N):")
+    if single == 'Y':
+        global singleThread
+        singleThread = True
+
     chooseParse(urls)
 
 
