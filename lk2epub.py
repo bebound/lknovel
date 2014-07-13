@@ -144,7 +144,7 @@ def parseChapter(url, newEpub, number):
         findContent1 = re.compile(r'">(.*)</div>')
         findContent2 = re.compile(r'">(.*)</a>')
         content = []
-        for i in tempChapterContent[:-1]:
+        for i in tempChapterContent:
             if findContent1.search(str(i).replace('</br>', '').replace('\n', '')):
                 content.append(findContent1.search(str(i).replace('</br>', '').replace('\n', '')).group(1))
             else:
