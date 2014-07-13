@@ -33,7 +33,7 @@ if hasQT:
     sender = SenderObject()
 
 
-#从volist中提取每一卷的网址
+# 从volist中提取每一卷的网址
 def parseList(url, epubFilePath='', coverPath=''):
     r = requests.get(url, headers=headers)
     r.encoding = 'utf-8'
@@ -400,7 +400,7 @@ def main():
         urls = sys.argv[1]
 
     single = input("单线程下载(Y/N):")
-    if single == 'Y':
+    if single in ['Y', 'y']:
         global singleThread
         singleThread = True
 
@@ -422,6 +422,7 @@ def chooseParse(urls, epubFilePath='', coverPath=''):
     else:
         print(
             '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/726.html\nhttp://lknovel.lightnovel.cn/main/book/2664.html')
+
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0'}
 if __name__ == '__main__':
