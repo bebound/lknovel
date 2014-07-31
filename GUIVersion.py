@@ -27,14 +27,6 @@ class AboutWidget(QtGui.QDialog, ui_aboutWidget.Ui_Dialog):
         self.pushButton.clicked.connect(lambda: self.close())
 
 
-class DownloadWidget(QtGui.QDialog):
-    def __init__(self, parent=None):
-        QtGui.QDialog.__init__(self, parent)
-
-    def initUI(self):
-        self.downloadTable = QtGui.QTableWidget()
-
-
 class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
     sigWarningMessage = QtCore.pyqtSignal(str, str)
     sigInformationMessage = QtCore.pyqtSignal(str, str)
@@ -64,10 +56,10 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.sigWarningMessage.connect(self.showWarningMessage)
         self.directoryButton.clicked.connect(self.selectSaveDirectory)
         self.coverButton.clicked.connect(self.selectCover)
-        lk2epub.sender.sigChangeStatus.connect(self.changeStatus)
-        lk2epub.sender.sigWarningMessage.connect(self.showWarningMessage)
-        lk2epub.sender.sigInformationMessage.connect(self.showInformationMessage)
-        lk2epub.sender.sigButton.connect(lambda: self.startButton.setEnabled(True))
+        lk2epub.SENDER.sigChangeStatus.connect(self.changeStatus)
+        lk2epub.SENDER.sigWarningMessage.connect(self.showWarningMessage)
+        lk2epub.SENDER.sigInformationMessage.connect(self.showInformationMessage)
+        lk2epub.SENDER.sigButton.connect(lambda: self.startButton.setEnabled(True))
         self.helpAction.triggered.connect(self.openHelpWidget)
         self.aboutAction.triggered.connect(self.openAboutWidget)
 
@@ -82,8 +74,9 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
                 ok = 0
                 break
         if ok:
-            t = threading.Thread(target=lk2epub.chooseParse,
-                                 args=(' '.join(urls.split('\n')), self.savePath, self.coverPath))
+            self.setting.setValue('savePath', self.savePath)
+            t = threading.Thread(target=lk2epub.start,
+                                 args=('|'.join(urls.split('\n')), self.savePath, self.coverPath))
             t.start()
             self.startButton.setEnabled(False)
         else:
@@ -96,7 +89,6 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         if tempPath:
             self.savePath = tempPath
             self.directoryLineEdit.setText(self.savePath)
-            self.setting.setValue('savePath', self.savePath)
 
     def selectCover(self):
         tempPath = str(
