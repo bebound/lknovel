@@ -59,16 +59,16 @@ def get_urls():
         A string contains urls
     """
     for i in sys.argv[1:]:
-        if i.startwith['-u']:
+        if i.startswith('-u'):
             return i[2:]
     else:
-        urls = input('Please input urls（separate with "|"）:')
+        urls = input('Please input urls（separate with ","）:')
         return urls
 
 
 def is_single_thread():
     for i in sys.argv[1:]:
-        if i.startwith['-s']:
+        if i.startswith('-s'):
             return True
     else:
         single = input("Single Thread(Y/N)?:")
@@ -324,7 +324,7 @@ def start(urls, epub_file_path=None, cover_path=None):
         epub_file_path: A string represent the path of the output EPUB file
         cover_file: A string represent the path of the EPUB cover
     """
-    for url in urls.split('|'):
+    for url in urls.split(','):
         check_result = check_url(url)
         if check_result == 'book':
             grab_volume(url, epub_file_path, cover_path)

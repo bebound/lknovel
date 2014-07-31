@@ -76,7 +76,7 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         if ok:
             self.setting.setValue('savePath', self.savePath)
             t = threading.Thread(target=lk2epub.start,
-                                 args=('|'.join(urls.split('\n')), self.savePath, self.coverPath))
+                                 args=(','.join(urls.split('\n')), self.savePath, self.coverPath))
             t.start()
             self.startButton.setEnabled(False)
         else:
