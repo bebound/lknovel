@@ -14,13 +14,11 @@
 
 ###lk2epub
 
-输入网址
+`python3 lk2epub.py -uhttp://lknovel.lightnovel.cn/main/book/2664.html,http://lknovel.lightnovel.cn/main/book/2666.html`
 
-例如：
+以`,`隔开网址
 
-http://lknovel.lightnovel.cn/main/book/2664.html
-
-http://lknovel.lightnovel.cn/main/vollist/726.html
+加入`-s`参数，使用单线程下载
 
 ![lk2epub截图](https://raw.github.com/bebound/lknovel/master/screenShot/1.PNG)
 
@@ -28,9 +26,9 @@ http://lknovel.lightnovel.cn/main/vollist/726.html
 
 1. 网址 输入轻小说在轻之国度的完整地址，系列或单卷均可，以回车分割，例如：
 
-    http://lknovel.lightnovel.cn/main/book/2664.html
+    `http://lknovel.lightnovel.cn/main/book/2664.html`
 
-    http://lknovel.lightnovel.cn/main/vollist/726.html
+    `http://lknovel.lightnovel.cn/main/vollist/726.html`
 
 2. 封面 轻之国度自带的封面太小，可自定义轻小说封面
 
