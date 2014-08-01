@@ -35,21 +35,6 @@ class Epub():
         base_path: A string represent the epub temp path
 
     """
-    # def __init__(self, volume_name, volume_number, author, illuster, introduction, cover_url, chapter_links,
-    # epub_file_path,cover_path=None):
-    # self.volume_name = volume_name
-    # self.volume_number = volume_number
-    # self.author = author
-    #     self.illuster = illuster
-    #     self.introduction = introduction
-    #     self.cover_url = cover_url
-    #     self.chapter_links = chapter_links
-    #     self.epub_file_path=epub_file_path
-    #     self.cover_path = cover_path
-    #     self.book_name = self.volume_name + ' ' + self.volume_number
-    #     self.uuid=str(uuid.uuid1())
-    #     self.chapter = []
-
     def __init__(self, url, epub_file_path='', cover_path='', single_thread=False):
         self.url = url
         self.epub_file_path = epub_file_path
