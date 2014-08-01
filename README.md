@@ -1,57 +1,51 @@
 #lknovel
 
-轻之国度在线轻小说转epub
+Generate epub from http://lknovel.lightnovel.cn/
 
 ![iPhone截图](https://raw.github.com/bebound/lknovel/master/screenShot/total.png)
 
-##使用要求
+##Requirements
 
 - [python3](http://www.python.org/getit/ "python3")
 - [requests](http://docs.python-requests.org/en/latest/ "requests")
 - [BeautifulSoup4](http://www.crummy.com/software/BeautifulSoup/ "BeautifulSoup4")
 
-##使用说明
+##Quick start
 
 ###lk2epub
 
 `python3 lk2epub.py -uhttp://lknovel.lightnovel.cn/main/book/2664.html,http://lknovel.lightnovel.cn/main/book/2666.html`
 
-以`,`隔开网址
+Separate urls with `,`
 
-加入`-s`参数，使用单线程下载
+add `-s` parameter to use single thread
 
 ![lk2epub截图](https://raw.github.com/bebound/lknovel/master/screenShot/1.PNG)
 
 ###GUIVersion
 
-1. 网址 输入轻小说在轻之国度的完整地址，系列或单卷均可，以回车分割，例如：
+1. Url: Input urls, separate with '\n' ：
 
     `http://lknovel.lightnovel.cn/main/book/2664.html`
 
     `http://lknovel.lightnovel.cn/main/vollist/726.html`
 
-2. 封面 轻之国度自带的封面太小，可自定义轻小说封面
+2. Cover: You can use your own cover for each epub file.
 
-    另外推荐下自己的另一个脚本[bookwalker.py](https://github.com/bebound/scripts)
+    This script can batch download covers from bookwalker:[bookwalker.py](https://github.com/bebound/scripts)
 
-	可批量获取bookwalker上的轻小说封面
 
-3. 保存路径 默认为桌面
+
+3. Sava path: Default is desktop
 
 ![GUIVersion截图](https://raw.github.com/bebound/lknovel/master/screenShot/3.png)
 
 
-##未来计划
-
-
-- GUIVersion图标
-- 修复sigil提示的错误
-- 下载进度条
 
 
 ##License
 
-MIT license. Copyright © Lei Hang
+MIT license. Copyright ©
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bebound/lknovel/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
