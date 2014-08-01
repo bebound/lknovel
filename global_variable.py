@@ -1,8 +1,8 @@
 # global variables
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0'}
+
 HAS_QT = False
-SINGLE_THREAD = False
 
 try:
     from PyQt4 import QtCore
@@ -19,9 +19,3 @@ if HAS_QT:
         sigButton = QtCore.pyqtSignal()
 
     SENDER = SenderObject()
-
-def single_thread():
-    SINGLE_THREAD=True
-
-def retrun_single():
-    return SINGLE_THREAD
