@@ -5,8 +5,10 @@ from bs4 import BeautifulSoup
 import requests
 
 from epub import Epub
-from global_variable import HAS_QT, SENDER, HEADERS
+from global_variable import HAS_QT, HEADERS
 
+if HAS_QT:
+    from global_variable import SENDER
 
 SINGLE_THREAD = False
 
