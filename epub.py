@@ -319,9 +319,11 @@ class Epub():
 
     def create_title_html(self):
         title_html = self.file_to_string('./templates/Title.html')
+        author='<p class="titlep">作者：' +self.author + '</p>'
+        illuster='' if not self.illuster else '<p class="titlep">插画：' +self.author + '</p>'
         final_title_html = title_html.format(book_name=self.book_name, volume_name=self.volume_name,
-                                             volume_number=self.volume_number, author=self.author,
-                                             illuster=self.illuster)
+                                             volume_number=self.volume_number, author=author,
+                                             illuster=illuster)
         return final_title_html
 
     def create_contents_html(self):
