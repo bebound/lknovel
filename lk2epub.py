@@ -6,6 +6,7 @@ import requests
 
 from epub import Epub
 from global_variable import HAS_QT, HEADERS
+from novel import Novel
 
 if HAS_QT:
     from global_variable import SENDER
@@ -76,8 +77,9 @@ def grab_volume(url, epub_file_path, cover_path):
     """
     try:
         print_info('Getting:' + url)
-        epub = Epub(url=url, epub_file_path=epub_file_path, cover_path=cover_path, single_thread=SINGLE_THREAD)
-
+        novel = Novel(url=url, single_thread=SINGLE_THREAD)
+        novel.get_novel_information()
+        epub = Epub(epub_file_path=epub_file_path, cover_path=cover_path, **novel.novel_information())
         epub.generate_epub()
 
     except Exception as e:
@@ -137,8 +139,8 @@ def start(urls, epub_file_path=None, cover_path=None):
             grab_booklist(url, epub_file_path, cover_path)
         else:
             print(
-                '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/726.html' +
-                '\nhttp://lknovel.lightnovel.cn/main/book/2664.html')
+                '请输入正确的网址，例如：\nhttp://lknovel.lightnovel.cn/main/vollist/492.html' +
+                '\nhttp://lknovel.lightnovel.cn/main/book/1578.html')
 
 
 def main():
@@ -151,4 +153,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
