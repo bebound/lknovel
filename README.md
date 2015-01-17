@@ -41,11 +41,5 @@ add `-s` parameter to use single thread
 ![GUIVersion截图](https://raw.github.com/bebound/lknovel/master/screenShot/3.png)
 
 
-
-
-##License
-
-MIT license. Copyright ©
-
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bebound/lknovel/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
