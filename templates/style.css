@@ -108,7 +108,7 @@ li.c-rules {
 }
 
 .title {
-    font-size: 1.5em;
+    font-size: 1.3em;
     font-weight: bold;
     text-align: center;
     padding: 10px 10px;
@@ -132,4 +132,9 @@ li.c-rules {
 
 .entry-content.introduction {
     text-align: center;
+}
+
+.titlep{
+    text-align: center;
+    text-indent: 0;
 }
