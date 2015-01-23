@@ -4,6 +4,7 @@ import os
 import re
 import queue
 import shutil
+import sys
 import uuid
 import zipfile
 
@@ -16,6 +17,7 @@ if HAS_QT:
     from global_variable import SENDER
 
 _download_queue = queue.Queue()
+_PROGRESS_LOCK = threading.Lock()
 
 
 class Epub():
@@ -57,6 +59,8 @@ class Epub():
         self.base_path = ''
         self.pictures = []
 
+        self.finished_picture_number = 0
+
 
     def create_folders(self):
         if not os.path.exists(self.base_path):
@@ -82,6 +86,22 @@ class Epub():
         if HAS_QT:
             SENDER.sigChangeStatus.emit(info)
 
+    @staticmethod
+    def emit_info(info):
+        if HAS_QT:
+            SENDER.sigChangeStatus.emit(info)
+
+    def download_progress(self, url):
+        with _PROGRESS_LOCK:
+            self.finished_picture_number += 1
+            self.emit_info(str(self.finished_picture_number) + '/' + str(len(self.pictures)) + url)
+            sharp_number = round(self.finished_picture_number / len(self.pictures) * 60)
+            space_number = 60 - sharp_number
+            sys.stdout.write(
+                '\r' + str(self.finished_picture_number) + '/' + str(
+                    len(self.pictures)) + '[' + '#' * sharp_number + ' ' * space_number + ']')
+            sys.stdout.flush()
+
     def download_picture(self):
         """
         download pictures from _download_queue
@@ -91,7 +111,6 @@ class Epub():
                 url = _download_queue.get()
                 path = os.path.join(os.path.join(self.base_path, 'Images'), url.split('/')[-1])
                 if not os.path.exists(path):
-                    self.print_info('downloading:' + url)
                     r = requests.get(url, headers=HEADERS, stream=True)
                     if r.status_code == requests.codes.ok:
                         temp_chunk = r.content
@@ -99,7 +118,9 @@ class Epub():
                             f.write(temp_chunk)
                     else:
                         print(r.status_code)
-            except:
+                self.download_progress(url)
+            except Exception as e:
+                print(e)
                 _download_queue.put(url)
             finally:
                 _download_queue.task_done()
@@ -157,7 +178,7 @@ class Epub():
     def create_title_html(self):
         title_html = self.file_to_string('./templates/Title.html')
         author = '<p class="titlep">作者：' + self.author + '</p>'
-        illuster = '' if not self.illuster else '<p class="titlep">插画：' + self.author + '</p>'
+        illuster = '' if not self.illuster else '<p class="titlep">插画：' + self.illuster + '</p>'
         final_title_html = title_html.format(book_name=self.book_name, volume_name=self.volume_name,
                                              volume_number=self.volume_number, author=author,
                                              illuster=illuster)
@@ -175,12 +196,13 @@ class Epub():
         for picture in self.pictures:
             _download_queue.put(picture)
         th = []
+        self.print_info('Start download pictures, total number:' + str(len(self.pictures)))
         for i in range(5):
             t = threading.Thread(target=self.download_picture)
             t.start()
             th.append(t)
-        for i in th:
-            i.join()
+        for t in th:
+            t.join()
 
     def create_content_opf_html(self):
         content_opf_html = self.file_to_string('./templates/content.opf')
@@ -288,7 +310,7 @@ class Epub():
         self.create_html()
 
         self.zip_files()
-        self.print_info('已生成：' + self.book_name + '.epub\n\n')
+        self.print_info('\n已生成：' + self.book_name + '.epub\n\n')
 
         # delete temp file
         shutil.rmtree(self.base_path)
