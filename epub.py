@@ -32,7 +32,7 @@ class Epub():
         volume_introduction: A string represent the introduction
         volume_cover_url: A string represent the cover_url
         chapter_links: A string represent the chapter links
-        epub_file_path: A stirng represent the epub save path
+        output_dir: A stirng represent the epub save path
         cover_path: A string represent the cover path
         book_namer: A string represent the book name
         uuid: A string represent the book uuid
@@ -41,8 +41,8 @@ class Epub():
 
     """
 
-    def __init__(self, epub_file_path='', cover_path='', single_thread=False, **kwargs):
-        self.epub_file_path = epub_file_path
+    def __init__(self, output_dir=None, cover_path=None, single_thread=False, **kwargs):
+        self.output_dir = output_dir
         self.cover_path = cover_path
         self.single_thread = single_thread
 
@@ -290,12 +290,12 @@ class Epub():
 
     def move_epub_file(self):
         folder_name = os.path.basename(self.base_path)
-        if os.path.exists(os.path.join(self.epub_file_path, folder_name + '.epub')):
+        if os.path.exists(os.path.join(self.output_dir, folder_name + '.epub')):
             if HAS_QT:
                 SENDER.sigWarningMessage.emit('文件名已存在', 'epub保存在lknovel文件夹')
                 SENDER.sigButton.emit()
         else:
-            shutil.move(folder_name + '.epub', self.epub_file_path)
+            shutil.move(folder_name + '.epub', self.output_dir)
             if HAS_QT:
                 SENDER.sigInformationMessage.emit('已生成', folder_name + '.epub')
                 SENDER.sigButton.emit()
@@ -316,5 +316,5 @@ class Epub():
         shutil.rmtree(self.base_path)
 
         # move file
-        if self.epub_file_path:
+        if self.output_dir:
             self.move_epub_file()

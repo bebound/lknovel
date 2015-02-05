@@ -22,7 +22,7 @@ class Novel():
         volume_introduction: A string represent the introduction
         volume_cover_url: A string represent the cover_url
         chapter_links: A string represent the chapter links
-        epub_file_path: A stirng represent the epub save path
+        output_dir: A stirng represent the epub save path
         cover_path: A string represent the cover path
         book_name: A string represent the book name
         chapter: A list represent the chapter
