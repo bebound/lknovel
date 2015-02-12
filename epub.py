@@ -82,9 +82,12 @@ class Epub():
 
     @staticmethod
     def print_info(info):
-        print(info)
-        if HAS_QT:
-            SENDER.sigChangeStatus.emit(info)
+        try:
+            print(info)
+            if HAS_QT:
+                SENDER.sigChangeStatus.emit(info)
+        except UnicodeDecodeError as e:
+            print('Ignored:', e)
 
     @staticmethod
     def emit_info(info):
@@ -107,8 +110,8 @@ class Epub():
         download pictures from _download_queue
         """
         while not _download_queue.empty():
+            url = _download_queue.get()
             try:
-                url = _download_queue.get()
                 path = os.path.join(os.path.join(self.base_path, 'Images'), url.split('/')[-1])
                 if not os.path.exists(path):
                     r = requests.get(url, headers=HEADERS, stream=True)

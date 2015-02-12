@@ -143,9 +143,12 @@ class Novel():
 
     @staticmethod
     def print_info(info):
-        print(info)
-        if HAS_QT:
-            SENDER.sigChangeStatus.emit(info)
+        try:
+            print(info)
+            if HAS_QT:
+                SENDER.sigChangeStatus.emit(info)
+        except UnicodeDecodeError as e:
+            print('Ignored:', e)
 
     @staticmethod
     def get_content(soup):
