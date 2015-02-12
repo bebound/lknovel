@@ -7,7 +7,7 @@ Usage:
     lknovel.py -v | --version
 
 Arguments:
-    <url>                                      novel url
+    <url>                                      Novel url
 
 Options:
     -s                                         Single thread

@@ -28,7 +28,7 @@ class Epub():
         volume_name: A string represent the volume name
         volume_number: A string represent the volume number
         volume_author: A string represent the author
-        volume_illuster: A string represent the illuster
+        volume_illustrator: A string represent the illustrator
         volume_introduction: A string represent the introduction
         volume_cover_url: A string represent the cover_url
         chapter_links: A string represent the chapter links
@@ -52,7 +52,7 @@ class Epub():
         self.volume_name = kwargs['volume_name']
         self.volume_number = kwargs['volume_number']
         self.author = kwargs['author']
-        self.illuster = kwargs['illuster']
+        self.illustrator = kwargs['illustrator']
         self.introduction = kwargs['introduction']
         self.cover_url = kwargs['cover_url']
         self.book_name = kwargs['book_name']
@@ -181,10 +181,10 @@ class Epub():
     def create_title_html(self):
         title_html = self.file_to_string('./templates/Title.html')
         author = '<p class="titlep">作者：' + self.author + '</p>'
-        illuster = '' if not self.illuster else '<p class="titlep">插画：' + self.illuster + '</p>'
+        illustrator = '' if not self.illustrator else '<p class="titlep">插画：' + self.illustrator + '</p>'
         final_title_html = title_html.format(book_name=self.book_name, volume_name=self.volume_name,
                                              volume_number=self.volume_number, author=author,
-                                             illuster=illuster)
+                                             illustrator=illustrator)
         return final_title_html
 
     def create_contents_html(self):
@@ -199,7 +199,7 @@ class Epub():
         for picture in self.pictures:
             _download_queue.put(picture)
         th = []
-        self.print_info('Start download pictures, total number:' + str(len(self.pictures)))
+        self.print_info('Start downloading pictures, total number:' + str(len(self.pictures)))
         for i in range(5):
             t = threading.Thread(target=self.download_picture)
             t.start()

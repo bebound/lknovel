@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui
 import ui_mainWindow
 import ui_helpWidget
 import ui_aboutWidget
-import lk2epub
+import lknovel
 
 
 class HelpWidget(QtGui.QDialog, ui_helpWidget.Ui_Dialog):
@@ -56,10 +56,10 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.sigWarningMessage.connect(self.showWarningMessage)
         self.directoryButton.clicked.connect(self.selectSaveDirectory)
         self.coverButton.clicked.connect(self.selectCover)
-        lk2epub.SENDER.sigChangeStatus.connect(self.changeStatus)
-        lk2epub.SENDER.sigWarningMessage.connect(self.showWarningMessage)
-        lk2epub.SENDER.sigInformationMessage.connect(self.showInformationMessage)
-        lk2epub.SENDER.sigButton.connect(lambda: self.startButton.setEnabled(True))
+        lknovel.SENDER.sigChangeStatus.connect(self.changeStatus)
+        lknovel.SENDER.sigWarningMessage.connect(self.showWarningMessage)
+        lknovel.SENDER.sigInformationMessage.connect(self.showInformationMessage)
+        lknovel.SENDER.sigButton.connect(lambda: self.startButton.setEnabled(True))
         self.helpAction.triggered.connect(self.openHelpWidget)
         self.aboutAction.triggered.connect(self.openAboutWidget)
 
@@ -75,7 +75,7 @@ class MainWindow(QtGui.QMainWindow, ui_mainWindow.Ui_MainWindow):
                 break
         if ok:
             self.setting.setValue('savePath', self.savePath)
-            t = threading.Thread(target=lk2epub.start,
+            t = threading.Thread(target=lknovel.start,
                                  args=(','.join(urls.split('\n')), self.savePath, self.coverPath))
             t.start()
             self.startButton.setEnabled(False)
