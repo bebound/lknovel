@@ -61,7 +61,6 @@ class Epub():
 
         self.finished_picture_number = 0
 
-
     def create_folders(self):
         if not os.path.exists(self.base_path):
             os.mkdir(self.base_path)
@@ -158,6 +157,12 @@ class Epub():
         with codecs.open(file_path, 'w', 'utf-8') as f:
             f.write(BeautifulSoup(html).prettify())
 
+    @staticmethod
+    def write_xml(xml, file_path):
+        with codecs.open(file_path, 'w', 'utf-8') as f:
+            print(xml)
+            f.write(xml)
+
     def create_chapter_html(self):
         chapter_html = self.file_to_string('./templates/Chapter.html')
         final_chapter_htmls = []
@@ -207,8 +212,8 @@ class Epub():
         for t in th:
             t.join()
 
-    def create_content_opf_html(self):
-        content_opf_html = self.file_to_string('./templates/content.opf')
+    def create_content_opf_xml(self):
+        content_opf_xml = self.file_to_string('./templates/content.opf')
         cover_name = self.cover_url.split('/')[-1]
 
         file_paths = []
@@ -235,14 +240,14 @@ class Epub():
             for file in sorted(file_names, key=self.sort_itemref):
                 if file not in ('Cover.html', 'Title.html', 'Contents.html'):
                     chapter_orders.append('<itemref idref="' + file + '" />')
-        final_content_opf_html = content_opf_html.format(book_name=self.book_name, uuid=self.uuid,
-                                                         cover_name=cover_name,
-                                                         author=self.author, file_paths='\n'.join(file_paths),
-                                                         chapter_orders='\n'.join(chapter_orders))
-        return final_content_opf_html
+        final_content_opf_xml = content_opf_xml.format(book_name=self.book_name, uuid=self.uuid,
+                                                       cover_name=cover_name,
+                                                       author=self.author, file_paths='\n'.join(file_paths),
+                                                       chapter_orders='\n'.join(chapter_orders))
+        return final_content_opf_xml
 
-    def create_toc_html(self):
-        toc_html = self.file_to_string('./templates/toc.ncx')
+    def create_toc_xml(self):
+        toc_xml = self.file_to_string('./templates/toc.ncx')
         nav = []
         playorder = 4
         for i in sorted(self.chapters, key=lambda chapter: chapter[0]):
@@ -250,9 +255,9 @@ class Epub():
                 '<navPoint id="' + str(i[0]) + '" playOrder="' + str(playorder) + '">\n<navLabel>\n<text>' + i[
                     1] + '</text>\n</navLabel>\n<content src="Text/' + str(i[0]) + '.html"/>\n</navPoint>')
             playorder += 1
-        final_toc_html = toc_html.format(uuid=self.uuid, book_name=self.book_name, author=self.author,
-                                         nav='\n'.join(nav))
-        return final_toc_html
+        final_toc_xml = toc_xml.format(uuid=self.uuid, book_name=self.book_name, author=self.author,
+                                       nav='\n'.join(nav))
+        return final_toc_xml
 
     def create_html(self):
         """
@@ -275,11 +280,11 @@ class Epub():
 
         self.download_all_pictures()
 
-        content_opf_html = self.create_content_opf_html()
-        self.write_html(content_opf_html, os.path.join(self.base_path, 'content.opf'))
+        content_opf_xml = self.create_content_opf_xml()
+        self.write_xml(content_opf_xml, os.path.join(self.base_path, 'content.opf'))
 
-        toc_html = self.create_toc_html()
-        self.write_html(toc_html, os.path.join(self.base_path, 'toc.ncx'))
+        toc_xml = self.create_toc_xml()
+        self.write_xml(toc_xml, os.path.join(self.base_path, 'toc.ncx'))
 
     def zip_files(self):
         folder_name = os.path.basename(self.base_path)
