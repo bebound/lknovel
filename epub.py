@@ -160,7 +160,6 @@ class Epub():
     @staticmethod
     def write_xml(xml, file_path):
         with codecs.open(file_path, 'w', 'utf-8') as f:
-            print(xml)
             f.write(xml)
 
     def create_chapter_html(self):
