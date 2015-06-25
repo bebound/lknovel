@@ -1,3 +1,4 @@
+# !/usr/bin/env python3
 """lknovel
 
 Usage:
@@ -20,7 +21,6 @@ Examples:
     lknovel.py http://lknovel.lightnovel.cn/main/vollist/492.html -s
     lknovel.py http://lknovel.lightnovel.cn/main/book/1578.html -o d:/
 """
-# !/usr/bin/env python3
 import re
 import sys
 

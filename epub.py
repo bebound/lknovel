@@ -32,9 +32,9 @@ class Epub():
         volume_introduction: A string represent the introduction
         volume_cover_url: A string represent the cover_url
         chapter_links: A string represent the chapter links
-        output_dir: A stirng represent the epub save path
+        output_dir: A string represent the epub save path
         cover_path: A string represent the cover path
-        book_namer: A string represent the book name
+        book_name: A string represent the book name
         uuid: A string represent the book uuid
         chapter: A list represent the chapter
         base_path: A string represent the epub temp path
