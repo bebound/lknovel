@@ -1,3 +1,5 @@
+*Discontinued, the new repo is [linovel](https://github.com/bebound/linovel)*
+
 #lknovel
 
 Generate epub from http://lknovel.lightnovel.cn/
